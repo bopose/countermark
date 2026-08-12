@@ -437,12 +437,34 @@ samples/                        real-world fixtures; ~23 MB, optional (tests ski
 test_*.py                       one test file per module above, plus test_c2pa_reader_real_files.py
 ```
 
-## License
+## Licensing
 
-MIT — see [LICENSE](LICENSE). Chosen so that other educators, students and
-small archives can reuse and adapt this freely; change it if you'd rather.
+Code and prose are licensed separately, because they are useful in different
+ways. Every file carries an SPDX identifier where it differs from the default.
 
-The files in `samples/` are third-party test material under their own terms:
-the C2PA JPEGs are CC BY-SA from
+| Path | Licence | |
+|---|---|---|
+| everything not listed below | **MIT** | [LICENSE](LICENSE) |
+| `static/detectors.html` | **CC BY-SA 4.0** | [LICENSE.CC-BY-SA](LICENSE.CC-BY-SA) |
+| `samples/` | third-party, see below | — |
+
+**Why the split.** MIT on the code keeps adoption frictionless: a university
+IT department, a library or another educator can take it, adapt it and embed
+it without a legal review. Copyleft would have bought little here — the
+scanner is a few hundred lines over `unicodedata` and anyone could reimplement
+it in a day — while landing on exactly the procurement deny-lists that slow
+down the institutions this is meant to reach.
+
+The explainer is the artifact that is genuinely hard to reproduce: the
+argument, the framing, and sources checked against their originals rather than
+recalled. **CC BY-SA** suits it better than a software licence does. It is
+written to be adapted — a students' union or disability service rewriting it
+for their own context is the intended outcome — and ShareAlike keeps those
+adaptations open and attributed as they spread.
+
+**Third-party material.** The files in `samples/` are test fixtures under their
+own terms: the C2PA JPEGs are CC BY-SA from
 [c2pa-org/public-testfiles](https://github.com/c2pa-org/public-testfiles), and
-the PNGs are MIT from [contentauth](https://github.com/contentauth/example-assets).
+the PNGs are MIT from
+[contentauth](https://github.com/contentauth/example-assets). Research quoted
+in the explainer belongs to its authors and is cited in the document.
