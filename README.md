@@ -320,8 +320,14 @@ low base rates (1.7% vs 1.2%), because the odds ratio without the base rate
 would be the kind of overstatement that gets a document dismissed. For UK
 students it adds the *reasonable adjustment* argument from
 [Morgan (2026)](https://doi.org/10.1080/09687599.2026.2667528) in
-*Disability &amp; Society*, which is stronger than an evidential point because
-it engages a legal duty rather than a judgement call.
+*Disability & Society* (open access), built on the Court of Appeal ruling in
+*University of Bristol v Abrahart* [2024]: a competence standard is not the
+same as the method used to assess it, and in most subjects the competence being
+tested is knowledge and analysis — not the ability to produce unmediated prose.
+That is a stronger lever than any statistic, because it engages a legal duty
+rather than a judgement call. The page is careful to say what the ruling did
+*not* decide, since overclaiming it would be the fastest way to lose the
+point.
 
 It argues one narrow, defensible claim — *a detector score is not by itself a
 sound basis for a finding of misconduct* — and it includes a section stating

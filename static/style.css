@@ -121,6 +121,13 @@ button:hover { filter: brightness(1.05); }
   border-radius: 0 8px 8px 0;
 }
 .document .callout p:last-child { margin-bottom: 0; }
+.document .aside {
+  font-size: .9rem;
+  color: var(--muted);
+  border-left: 3px solid var(--border);
+  padding-left: .9rem;
+  margin: 1.2rem 0;
+}
 .document .sources { font-size: .9rem; }
 .document .sources li { margin-bottom: .6rem; }
 .document .footnote {
