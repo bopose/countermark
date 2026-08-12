@@ -38,6 +38,10 @@
       a detector score alone cannot establish that a piece of work is not. And if
       you are disabled, the question may not only be evidential but
       <a href="#legal">legal</a>.</p>
+    <p>If you <em>did</em> use a tool for assistance and are worried about a
+      provenance mark rather than a detector guess, see
+      <a href="#watermarks">the separate section on that</a> — it needs a
+      different argument, and the vendors' own documentation helps you make it.</p>
 
     <h2>The evidence</h2>
 
@@ -207,6 +211,60 @@
       peer-reviewed and published in a leading disability studies journal on those
       terms.</p>
 
+    <h2 id="watermarks">A different signal: provenance marks and the word
+      &ldquo;processed&rdquo;</h2>
+    <p>Everything above concerns <em>detectors</em>, which guess after the fact.
+      There is a second, quite different mechanism: some AI providers now embed a
+      deliberate mark in the text their systems produce. This is not guesswork —
+      the producer put it there — so it is more reliable than a detector. What it
+      reports, however, is narrower than people assume, and the vendors say so.</p>
+    <p>Anthropic's own documentation for Claude states:</p>
+    <blockquote>
+      <p>&ldquo;Detecting a Claude mark tells you that the content <em>may have
+      been processed by</em> Claude. It does not, on its own, confirm the full
+      provenance of the content.&rdquo;</p>
+      <p>&ldquo;Claude may not be the original author. People often use Claude to
+      <strong>proofread</strong>, translate, summarize, or convert files. The
+      output can carry a Claude mark <strong>even if the underlying ideas, text,
+      or data originated from another source</strong>.&rdquo;</p>
+    </blockquote>
+    <p>Read that carefully, because it is a rare thing: the company that makes the
+      mark stating in its own documentation that the mark does not establish
+      authorship, and naming proofreading as the example. If your work is
+      substantially your own and a tool was used to tidy the expression, a
+      detected mark is <em>consistent with exactly what you say happened</em>.</p>
+
+    <h3>Why this is not a "the tool was wrong" argument</h3>
+    <p>This section differs from everything above it, and the difference is worth
+      being honest about rather than blurring.</p>
+    <p>A detector false positive is an <strong>error</strong> — the tool said
+      something untrue. But if you used a language model to restructure your
+      paragraphs and the output carries a mark, the mark is <strong>correct</strong>.
+      The text really was processed by that system. Nothing has malfunctioned.</p>
+    <p>So the argument here cannot be "the technology is unreliable", and it
+      should not be attempted — it will fail, and it will damage your credibility
+      on the points where unreliability <em>is</em> the issue. The argument is the
+      one set out in the <a href="#legal">section above</a>: mediation of
+      <em>expression</em> is not outsourcing of <em>authorship</em>. A scribe
+      leaves fingerprints on a text too. The question a fair process must ask is
+      not &ldquo;was a tool involved?&rdquo; but &ldquo;whose ideas and reasoning
+      are these?&rdquo;</p>
+    <p>This distinction matters more, not less, as marking improves. An argument
+      that depends on detectors being bad stops working the moment they get good.
+      An argument about what mediation <em>means</em> does not.</p>
+    <p class="aside">A technical note, offered with appropriate uncertainty:
+      these marks are generally embedded by biasing which word the system picks
+      as it generates, which requires that it have a genuine choice to bias. Where
+      a tool reproduces your sentence unchanged it has no such freedom, so an
+      unaltered passage would be expected to carry little or no signal, with
+      strength rising the more the text was actually changed. That is inference
+      from how published schemes of this kind work, not from any vendor's
+      implementation, which is not public. Do not build a case on it.</p>
+    <p><strong>This page's own tool cannot check any of this.</strong> The
+      inspector shipped alongside this document finds hidden characters — it
+      cannot detect a statistical watermark, and says so. Only the vendor that
+      embedded a mark can confirm it.</p>
+
     <h2>What a fair process looks like</h2>
     <p>This is not an argument that AI use should go undeclared. It is an argument
       about what counts as evidence. Reasonable asks of an institution:</p>
@@ -227,6 +285,10 @@
         support — can simply be stated rather than concealed. A short reflective
         appendix, as already used for scribes and dictation, does this without
         treating the student as a suspect.</li>
+      <li><strong>Do not treat a provenance mark as proof of authorship.</strong>
+        It reports that content passed through a system, which is not the same
+        claim — as the vendors' own documentation states. Ask what was mediated
+        and whose reasoning is on the page.</li>
       <li><strong>Provide a real appeal</strong>, with human review by someone who
         understands the tool's limits. The same review notes that many
         institutions rely on detector output for high-stakes decisions without
@@ -315,6 +377,13 @@
         in full without a subscription.</li>
       <li><em>University of Bristol v Dr Robert Abrahart</em> [2024], Court of
         Appeal — discussed in Morgan (2026) above.</li>
+      <li>Anthropic. <em>How Claude marks AI-generated content.</em> Support
+        documentation.
+        <a href="https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content">support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content</a>
+        — source of the quoted statements that a mark indicates content
+        &ldquo;may have been processed by&rdquo; Claude and that output
+        &ldquo;can carry a Claude mark even if the underlying ideas, text, or
+        data originated from another source&rdquo;.</li>
       <li>Center for Democracy &amp; Technology (March 2024). Survey of more than
         450 instructors, cited in the Bloomberg reporting above.</li>
     </ol>

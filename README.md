@@ -329,6 +329,16 @@ rather than a judgement call. The page is careful to say what the ruling did
 *not* decide, since overclaiming it would be the fastest way to lose the
 point.
 
+A separate section covers **provenance marks** (watermarks deliberately
+embedded by the AI producer, as opposed to detector guesswork), quoting
+Anthropic's own documentation that a mark means content "may have been
+processed by" Claude and "can carry a Claude mark even if the underlying ideas,
+text, or data originated from another source" — with proofreading named as the
+example. That section is deliberately framed differently: for a student who
+genuinely did use a tool for assistance, the mark is *correct*, so arguing
+"the technology is unreliable" would fail. The argument there is the
+mediated-authorship one instead, which survives the marking getting better.
+
 It argues one narrow, defensible claim — *a detector score is not by itself a
 sound basis for a finding of misconduct* — and it includes a section stating
 the limits of its own evidence, including the constraints its authors put on

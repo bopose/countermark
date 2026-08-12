@@ -121,6 +121,16 @@ button:hover { filter: brightness(1.05); }
   border-radius: 0 8px 8px 0;
 }
 .document .callout p:last-child { margin-bottom: 0; }
+.document blockquote {
+  margin: 1.1rem 0;
+  padding: .7rem 1.1rem;
+  border-left: 4px solid var(--border);
+  background: var(--panel);
+  border-radius: 0 6px 6px 0;
+  font-size: .95rem;
+}
+.document blockquote p:last-child { margin-bottom: 0; }
+
 .document .aside {
   font-size: .9rem;
   color: var(--muted);
