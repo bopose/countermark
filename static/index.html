@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hidden-character inspector</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main>
+    <p class="nav"><a href="/provenance">Provenance record builder →</a> · <a href="/c2pa">C2PA manifest reader →</a></p>
+    <h1>Hidden-character inspector</h1>
+    <p class="lede">
+      Paste text below to see any invisible or disguised characters it contains —
+      exactly where they are and what they are. Everything runs on your own machine.
+    </p>
+
+    <details class="honesty">
+      <summary>What this tool can and cannot tell you</summary>
+      <div>
+        <p><strong>It can</strong> find and show you hidden characters that are
+        really in the text: zero-width spaces, direction-control characters,
+        look-alike letters from other alphabets, odd spaces, and other
+        non-printing marks. These sit at exact positions and are shown below.</p>
+        <p><strong>It cannot</strong> detect a statistical "text watermark" of the
+        kind AI vendors embed by subtly biasing word choice. Those can only be
+        confirmed by the vendor that made them, using a secret key. No local tool
+        can find one, and any tool that claims to is really guessing from writing
+        style — the same unreliable guess that unfairly flags many non-native and
+        neurodiverse writers.</p>
+        <p><strong>So:</strong> finding nothing here does <em>not</em> prove text is
+        watermark-free, and finding something here does <em>not</em> prove it was
+        AI-generated. This tool shows you what is verifiably present. Nothing more,
+        nothing less.</p>
+      </div>
+    </details>
+
+    <label class="field-label" for="input">Text to inspect</label>
+    <textarea id="input" placeholder="Paste text here…" spellcheck="false"></textarea>
+    <div class="controls">
+      <button id="inspect" type="button">Inspect</button>
+      <button id="clean" type="button">Clean text</button>
+      <button id="load-file" type="button" class="secondary">Load file… (.txt, .md, .docx, .odt)</button>
+      <input type="file" id="input-file" accept=".txt,.md,.docx,.odt" hidden>
+      <button id="sample" type="button" class="secondary">Load an example</button>
+      <button id="clear" type="button" class="secondary">Clear</button>
+    </div>
+    <label class="opt">
+      <input type="checkbox" id="fix-homoglyphs">
+      When cleaning, also fix disguised look-alike words (high-confidence only —
+      never touches possibly-legitimate foreign words)
+    </label>
+
+    <section id="results" hidden>
+      <div id="summary" role="status"></div>
+      <h2>Text with hidden characters revealed</h2>
+      <p class="hint">Highlighted chips mark characters that are normally invisible
+        or disguised. Hover a chip, or tab to it and read its label, for details.</p>
+      <div id="rendered" class="rendered"></div>
+      <h2 id="details-heading" hidden>Every flagged character</h2>
+      <table id="details" hidden>
+        <thead><tr><th scope="col">#</th><th scope="col">Position</th><th scope="col">Codepoint</th><th scope="col">Name</th><th scope="col">Why it's flagged</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div id="homoglyphs" hidden>
+        <h2>Look-alike (homoglyph) words</h2>
+        <p class="hint">Words containing letters from another alphabet that imitate
+          Latin ones. A <strong>high</strong>-confidence match blends real and
+          look-alike letters in one word — no ordinary word does that.
+          <strong>Low</strong>-confidence matches may simply be legitimate text in
+          another language; judge them in context.</p>
+        <ul id="homoglyph-list"></ul>
+      </div>
+    </section>
+
+    <section id="clean-panel" hidden>
+      <h2>Cleaned text</h2>
+      <p class="boundary">This removes hidden characters and normalises odd spaces.
+        It does <strong>not</strong> remove any statistical AI watermark — this tool
+        cannot see those. Your original text above is left unchanged; copy the
+        cleaned version out below.</p>
+      <div id="clean-summary" role="status"></div>
+      <label class="field-label sr-only" for="clean-output">Cleaned text (read-only)</label>
+      <textarea id="clean-output" readonly spellcheck="false"></textarea>
+      <div class="controls">
+        <button id="copy-clean" type="button">Copy cleaned text</button>
+        <button id="download-clean" type="button" class="secondary">Download cleaned text (.txt)</button>
+      </div>
+      <details id="change-log" hidden>
+        <summary>What was changed (<span id="change-count">0</span>)</summary>
+        <table>
+          <thead><tr><th scope="col">Position</th><th scope="col">Codepoint</th><th scope="col">Name</th><th scope="col">Action</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </details>
+    </section>
+
+    <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+  </main>
+  <script src="/inspect.js"></script>
+</body>
+</html>

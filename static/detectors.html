@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What AI writing detectors can and cannot show</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main class="document">
+    <p class="nav no-print"><a href="/">← Hidden-character inspector</a> · <a href="/provenance">Provenance record builder</a> · <a href="/c2pa">C2PA manifest reader</a></p>
+
+    <h1>What AI writing detectors can and cannot show</h1>
+    <p class="lede">A short, citable summary of the published evidence — written to
+      be printed and handed to a teacher, marker, or academic-conduct panel
+      alongside your own account of how you worked.</p>
+
+    <div class="controls no-print">
+      <button id="print" type="button">Print this page</button>
+    </div>
+
+    <h2>The short version</h2>
+    <p>A detector score is <strong>not evidence of misconduct</strong>. The
+      peer-reviewed research, and the detector vendors' own statements, show
+      four things:</p>
+    <ol>
+      <li>These tools produce false positives at rates that matter, and they do
+        so <strong>unevenly</strong> — writing by non-native English speakers is
+        misclassified far more often than writing by native speakers.</li>
+      <li>Writing by <strong>autistic authors</strong> is also flagged
+        significantly more often than comparable writing by others.</li>
+      <li>The company that makes ChatGPT <strong>withdrew its own detector</strong>
+        because it was not accurate enough.</li>
+      <li>The mechanism these tools rely on penalises plain, regular, predictable
+        prose — which describes a great deal of honest writing.</li>
+    </ol>
+    <p>None of this proves any particular piece of work is genuine. It does mean
+      a detector score alone cannot establish that a piece of work is not. And if
+      you are disabled, the question may not only be evidential but
+      <a href="#legal">legal</a>.</p>
+
+    <h2>The evidence</h2>
+
+    <h3>1. Detectors misclassify non-native English writing at very high rates</h3>
+    <p>A peer-reviewed study in <em>Patterns</em> (Cell Press) evaluated
+      <strong>seven</strong> widely-used GPT detectors against 91 human-written
+      TOEFL essays by non-native English speakers and 88 essays by US eighth-grade
+      students. The detectors were <em>near-perfect</em> on the US
+      eighth-grade essays. On the TOEFL essays written by non-native speakers:</p>
+    <ul>
+      <li>the average false-positive rate was <strong>61.22%</strong> — more than
+        half of genuine human essays flagged as AI-generated;</li>
+      <li><strong>97.80%</strong> (89 of 91) were flagged by at least one detector;</li>
+      <li><strong>19.78%</strong> (18 of 91) were flagged unanimously by
+        <em>all seven</em> detectors.</li>
+    </ul>
+    <p>The authors' own recommendation is unambiguous: they
+      &ldquo;strongly caution against the use of GPT detectors in evaluative or
+      educational settings, particularly when assessing the work of non-native
+      English speakers.&rdquo;</p>
+
+    <h3>2. Autistic writing is flagged significantly more often</h3>
+    <p>A 2026 study tested the claim empirically, running roughly
+      <strong>60,000 Reddit posts</strong> through OpenAI's GPT-2 detector, split
+      into a &ldquo;likely-autistic&rdquo; corpus drawn from 13 autism-focused
+      communities and a general comparison corpus. Posts from the likely-autistic
+      corpus had a <strong>25% greater chance</strong> of being classified as
+      AI-generated (odds ratio 1.25, p = 0.001). When the texts were normalised to
+      the same length to rule out length effects, the gap widened to a
+      <strong>50% greater chance</strong> (odds ratio 1.50, p &lt; 0.001).</p>
+    <p><strong>Read that figure carefully, because the honest version is more
+      useful to you than the dramatic one.</strong> The underlying rates were low
+      in both groups: in the length-matched experiment, 1.7% of likely-autistic
+      posts were flagged versus 1.2% of the others. This is not "autistic writing
+      is usually flagged". It is: <em>whatever the baseline rate is, autistic
+      authors are carrying meaningfully more of it than others</em> — a systematic
+      tilt in who absorbs the errors. The authors conclude their findings
+      &ldquo;add further motivation to examine biases in other AI-detection models
+      and limit or discontinue their use given the potential for harm.&rdquo;</p>
+    <p>Notably, the usual explanation does not apply here. The researchers
+      measured perplexity and burstiness — the statistical features detectors
+      lean on — and found them <em>roughly equal or slightly higher</em> in the
+      autistic corpus, not lower. So the tilt is real but its cause is not
+      understood: the tools are penalising something the people who build them
+      cannot account for.</p>
+
+    <h3>3. OpenAI withdrew its own detector as insufficiently accurate</h3>
+    <p>OpenAI released an AI Text Classifier in January 2023 and
+      <strong>discontinued it on 20 July 2023</strong>, stating it was
+      &ldquo;no longer available due to its low rate of accuracy.&rdquo; On
+      OpenAI's own published evaluation, the tool correctly identified only
+      <strong>26%</strong> of AI-written text while incorrectly labelling
+      <strong>9%</strong> of human-written text as AI-generated.</p>
+
+    <h3>4. Even low error rates produce many wrong accusations at scale</h3>
+    <p><em>Bloomberg Businessweek</em> tested two leading services, GPTZero and
+      Copyleaks, against 500 college-application essays submitted to Texas A&amp;M
+      University in summer 2022 — before ChatGPT's public release, so they could
+      not have been AI-written. The services falsely flagged
+      <strong>1% to 2%</strong> of these essays as likely AI-written,
+      &ldquo;in some cases claiming to have near 100% certainty.&rdquo;</p>
+    <p>Turnitin has stated a <strong>4% false-positive rate</strong> at the
+      sentence level. Vanderbilt University disabled Turnitin's AI detection over
+      accuracy concerns, noting that hundreds of student papers would otherwise
+      have been incorrectly flagged in a single academic year. Around
+      <strong>two-thirds</strong> of instructors report using an AI checker
+      regularly, so even a small percentage becomes a large number of students.</p>
+    <p>How wrong these tools can be is easiest to see on a text whose authorship
+      is beyond dispute: a peer-reviewed 2026 review records the detector ZeroGPT
+      assessing the <strong>1987 Constitution of the Republic of the
+      Philippines</strong> — ratified decades before large language models existed
+      — as <strong>98.5% AI-generated</strong>. Formal, structured, repetitive
+      prose reads to these tools as machine-written, whoever wrote it and whenever
+      they wrote it.</p>
+
+    <h2>Why this falls unevenly on some writers</h2>
+    <p>Most detectors work from <em>perplexity</em> — roughly, how surprising each
+      word is given the words before it. Text that is regular and predictable
+      scores as "low perplexity", and low perplexity is what these tools read as
+      machine-written.</p>
+    <p>Writing tends to be more regular and predictable when the writer has a
+      smaller working vocabulary in that language, or writes deliberately plainly,
+      or uses consistent sentence structures. That describes a lot of honest
+      writing. The <em>Patterns</em> study demonstrates the mechanism directly:
+      when the non-native essays were rewritten with richer vocabulary, the
+      false-positive rate fell from <strong>61.22% to 11.77%</strong>. Nothing
+      about the authorship changed. Only the wording did.</p>
+    <p>The 2026 review adds a further, uncomfortable asymmetry: because these
+      tools are easily evaded by paraphrasing or translation, a student who
+      deliberately games them is likely to pass, while a student who simply writes
+      in their own plain voice may not. As its authors put it, the system in this
+      configuration &ldquo;punishes authenticity and rewards evasion.&rdquo;</p>
+
+    <div class="callout">
+      <p><strong>The paradox worth putting in front of a panel.</strong> The
+      <em>Patterns</em> authors note that
+      &ldquo;paradoxically, to evade false detection as AI-generated content,
+      these writers may need to rely on AI tools to refine their vocabulary and
+      linguistic diversity.&rdquo;</p>
+      <p>In other words, a student penalised for writing plainly can reduce
+      their risk of being falsely accused of using AI — by using AI. Any policy
+      that produces this result is not measuring what it thinks it is
+      measuring.</p>
+    </div>
+
+    <h2 id="legal">If you are disabled, this may be a legal question too</h2>
+    <p>In UK higher education there is a further argument, and it is stronger than
+      an evidential one because it engages a duty rather than a judgement call.
+      A 2026 article in <em>Disability &amp; Society</em> argues that assessment
+      which privileges &ldquo;neuro-normative written expression&rdquo; creates a
+      barrier for neurodivergent students, and that under equality law
+      institutions must distinguish a genuine <em>competence standard</em> — the
+      knowledge and reasoning being assessed — from the <em>method</em> used to
+      demonstrate it. On that basis it argues the regulated use of language tools
+      may amount to a <strong>reasonable adjustment</strong> where a student's
+      barrier lies in written expression rather than in reasoning, and proposes
+      &ldquo;mediated authorship&rdquo; as the frame: the student supplies the
+      ideas and the argument, the tool helps with clarity and structure.</p>
+    <p>If that describes your situation, the question to put to your institution
+      is not only &ldquo;is this evidence reliable?&rdquo; but &ldquo;what is the
+      competence standard this assessment measures, and is fluent unaided prose
+      genuinely part of it?&rdquo; Your disability service is usually the right
+      route, and worth involving early.</p>
+
+    <h2>What a fair process looks like</h2>
+    <p>This is not an argument that AI use should go undeclared. It is an argument
+      about what counts as evidence. Reasonable asks of an institution:</p>
+    <ul>
+      <li><strong>Never treat a detector score as sufficient evidence.</strong> It
+        is a signal with a documented, unevenly-distributed error rate, not a finding.</li>
+      <li><strong>Say what was actually alleged</strong>, and show the output being
+        relied on, so it can be answered.</li>
+      <li><strong>Treat a flag as the start of a conversation, not a verdict.</strong>
+        The 2026 review describes institutions using revision opportunities,
+        guided discussion and portfolio assessment for exactly this — restoring
+        the teacher's judgement as the thing that decides.</li>
+      <li><strong>Accept process evidence</strong> — drafts, version history,
+        dictation records, a written account of how the work was made. Ask for it
+        <em>before</em> accusing, ideally as normal practice for everyone.</li>
+      <li><strong>Have a declared-use policy</strong> so that ordinary assistive
+        use — grammar and spell checking, dictation, screen readers, translation
+        support — can simply be stated rather than concealed.</li>
+      <li><strong>Provide a real appeal</strong>, with human review by someone who
+        understands the tool's limits. The same review notes that many
+        institutions rely on detector output for high-stakes decisions without
+        adequate appeals processes or staff training.</li>
+    </ul>
+
+    <h2>Being honest about the limits of this evidence</h2>
+    <p>This page argues a case, so it should also say where the case is weaker —
+      a panel will find these limitations anyway, and the argument is stronger for
+      naming them first.</p>
+    <ul>
+      <li>The <em>Patterns</em> authors describe their work as a
+        <strong>pilot study</strong> with relatively small samples (91 and 88
+        essays), and note that most detectors they tested used GPT-2 as their
+        underlying model. Detector accuracy may differ from the 2023 figures.</li>
+      <li>The 61.22% figure is specific to TOEFL essays, a genre of short,
+        exam-conditions writing. It should not be read as "61% of all
+        second-language writing is flagged".</li>
+      <li>The autism study has real constraints its authors state plainly: it
+        tested <strong>one</strong> detector (OpenAI's GPT-2 model, since
+        withdrawn), on <strong>casual Reddit posts rather than academic
+        essays</strong>, and its &ldquo;likely-autistic&rdquo; grouping is
+        inferred from which community someone posted in, not from any diagnosis.
+        They argue this noise means the true difference may be larger than
+        measured, but it could also mean the grouping is capturing something other
+        than autism.</li>
+      <li>Turnitin has published its own analysis claiming no statistically
+        significant bias against English-language learners. A panel may raise it.
+        It is a vendor's assessment of its own product, and it does not address
+        the independent findings above, but you should know it exists rather than
+        be surprised by it.</li>
+      <li>None of this shows detectors are always wrong, and none of it shows any
+        particular piece of work is genuine. The claim here is narrower and
+        firmer: <strong>a detector score is not by itself a sound basis for a
+        finding of misconduct.</strong></li>
+    </ul>
+
+    <h2>Sources</h2>
+    <ol class="sources">
+      <li>Liang, W., Yuksekgonul, M., Mao, Y., Wu, E., &amp; Zou, J. (2023).
+        <em>GPT detectors are biased against non-native English writers.</em>
+        Patterns 4(7), 100779.
+        <a href="https://www.cell.com/patterns/fulltext/S2666-3899(23)00130-7">cell.com/patterns/fulltext/S2666-3899(23)00130-7</a>
+        (preprint: <a href="https://arxiv.org/abs/2304.02819">arXiv:2304.02819</a>)</li>
+      <li>Chambers, S., &amp; Kelley, M. C. (2026).
+        <em>The misclassification of autistic writing as AI-generated.</em>
+        Accepted for publication;
+        <a href="https://doi.org/10.1007/978-3-031-98420-4_7">doi.org/10.1007/978-3-031-98420-4_7</a>
+        (preprint: <a href="https://arxiv.org/abs/2607.14729">arXiv:2607.14729</a>)</li>
+      <li>OpenAI. <em>New AI classifier for indicating AI-written text</em>
+        (January 2023; withdrawal note added 20 July 2023).
+        <a href="https://openai.com/index/new-ai-classifier-for-indicating-ai-written-text/">openai.com/index/new-ai-classifier-for-indicating-ai-written-text</a></li>
+      <li>Davalos, J., &amp; Yin, L. (18 October 2024).
+        <em>AI Detectors Falsely Accuse Students of Cheating—With Big Consequences.</em>
+        Bloomberg Businessweek.
+        <a href="https://www.bloomberg.com/news/features/2024-10-18/do-ai-detectors-work-students-face-false-cheating-accusations">bloomberg.com/news/features/2024-10-18/do-ai-detectors-work-students-face-false-cheating-accusations</a></li>
+      <li>Giray, L., Caner, H. N., &amp; Amoozegar, A. (2026).
+        <em>Harms and ethical risks of AI detection tools in education: false
+        positives, bias, surveillance, and student rights.</em>
+        Journal of Narrative and Language Studies 14(30), 249–261.
+        <a href="https://doi.org/10.59045/nalans.2026.109">doi.org/10.59045/nalans.2026.109</a>
+        (open access)</li>
+      <li>Morgan, D. (2026).
+        <em>Reasonable adjustments for neurodivergent students in higher
+        education: generative AI, accessibility, and mediated authorship.</em>
+        Disability &amp; Society 41(7).
+        <a href="https://doi.org/10.1080/09687599.2026.2667528">doi.org/10.1080/09687599.2026.2667528</a></li>
+      <li>Center for Democracy &amp; Technology (March 2024). Survey of more than
+        450 instructors, cited in the Bloomberg reporting above.</li>
+    </ol>
+
+    <p class="footnote">Prepared with <strong>unwatermark</strong>, a local,
+      zero-dependency tool that inspects text for hidden characters and helps
+      writers document their own process. It does not detect AI-generated text
+      and does not claim to. Figures on this page are quoted from the sources
+      listed; please check them against the originals before relying on them in
+      a formal process.</p>
+  </main>
+  <script>
+    document.getElementById("print").addEventListener("click", () => window.print());
+  </script>
+</body>
+</html>

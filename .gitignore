@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+
+# Reference literature: paywalled/publisher PDFs used to source the /detectors
+# page. Kept locally for checking citations, never redistributed — the project
+# is MIT licensed and these are not ours to relicense.
+*.pdf

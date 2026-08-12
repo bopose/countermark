@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Provenance record</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main>
+    <p class="nav"><a href="/">← Hidden-character inspector</a> · <a href="/c2pa">C2PA manifest reader →</a></p>
+    <p class="callout-link"><strong>Facing an accusation?</strong> There's a
+      printable, sourced summary of what AI detectors can and cannot show —
+      <a href="/detectors">what the published evidence says</a> — meant to be
+      handed to a marker or panel alongside the record you build here.</p>
+    <h1>Provenance record</h1>
+    <p class="lede">
+      Show how you made your text, instead of being asked to prove you didn't
+      cheat. Compare your own draft with an AI-assisted version, label how each
+      part was written, and produce a record you can hand in.
+    </p>
+
+    <details class="honesty">
+      <summary>What this record is worth</summary>
+      <div>
+        <p>The <strong>section labels are a declaration</strong> — a good-faith
+        statement of how you worked, like citing your sources. A tool can't
+        verify them, and this one doesn't pretend to.</p>
+        <p>The <strong>draft comparison is evidence</strong>. If you paste your
+        own earlier draft, the numbers ("82% of the final text is word-for-word
+        from my draft") are computed from the two texts and are hard to fake —
+        that is what actually answers an accusation, especially if you used AI
+        only for grammar, spelling, or dictation.</p>
+      </div>
+    </details>
+
+    <h2>About this work</h2>
+    <div class="fields">
+      <label>Your name <input id="author" type="text" autocomplete="off"></label>
+      <label>Assignment / title <input id="assignment" type="text" autocomplete="off"></label>
+      <label>AI tool used (if any) <input id="ai_tool" type="text" autocomplete="off"></label>
+      <label>Date <input id="date" type="date"></label>
+    </div>
+
+    <h2>Your original draft <span class="optional">optional, but this is the evidence</span></h2>
+    <p class="hint">Paste an earlier version you wrote yourself — before any AI
+      help. Leave blank if you have none.</p>
+    <label class="field-label sr-only" for="original">Your original draft</label>
+    <textarea id="original" placeholder="Your own earlier draft…" spellcheck="false"></textarea>
+    <div class="controls">
+      <button id="load-original" type="button" class="secondary">Load file… (.txt, .md, .docx, .odt)</button>
+      <input type="file" id="original-file" accept=".txt,.md,.docx,.odt" hidden>
+    </div>
+
+    <h2>Final text</h2>
+    <p class="hint">The version you intend to submit.</p>
+    <label class="field-label sr-only" for="final">Final text</label>
+    <textarea id="final" placeholder="Your final text…" spellcheck="false"></textarea>
+    <div class="controls">
+      <button id="load-final" type="button" class="secondary">Load file… (.txt, .md, .docx, .odt)</button>
+      <input type="file" id="final-file" accept=".txt,.md,.docx,.odt" hidden>
+    </div>
+
+    <div class="controls">
+      <button id="compare" type="button">Compare drafts</button>
+      <button id="split" type="button" class="secondary">Label sections</button>
+    </div>
+
+    <section id="diff-panel" hidden>
+      <h2>What changed between your draft and the final text</h2>
+      <div id="diff-stats" role="status"></div>
+      <p class="hint">Amber text marks minor spelling/grammar fixes; red/green marks
+        substantive rewrites. Each change is also labelled for screen readers.</p>
+      <div id="diff-view" class="diff-view"></div>
+    </section>
+
+    <section id="sections-panel" hidden>
+      <h2>Label each section</h2>
+      <p class="hint">Say how each part of the final text was produced.</p>
+      <div id="sections"></div>
+    </section>
+
+    <div class="controls">
+      <button id="generate" type="button">Generate record</button>
+    </div>
+
+    <section id="record-panel" hidden>
+      <h2>Your provenance record</h2>
+      <label class="field-label sr-only" for="statement">Provenance statement (read-only)</label>
+      <textarea id="statement" readonly spellcheck="false"></textarea>
+      <div class="controls">
+        <button id="copy-statement" type="button">Copy statement</button>
+        <button id="download-statement" type="button" class="secondary">Download statement (.txt)</button>
+        <button id="download-sidecar" type="button" class="secondary">Download record data (.json)</button>
+      </div>
+    </section>
+
+    <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+  </main>
+  <script src="/provenance.js"></script>
+</body>
+</html>

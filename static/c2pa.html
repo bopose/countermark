@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C2PA manifest reader</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <main>
+    <p class="nav"><a href="/">← Hidden-character inspector</a> · <a href="/provenance">Provenance record builder</a></p>
+    <h1>C2PA manifest reader</h1>
+    <p class="lede">
+      PNG and JPEG image files can carry an embedded "Content Credentials"
+      manifest (the C2PA standard) claiming things like what tool produced the
+      image. This reads that manifest and shows exactly what it says.
+    </p>
+
+    <details class="honesty" open>
+      <summary>What this tool can and cannot tell you — read this first</summary>
+      <div>
+        <p><strong>It can</strong> find an embedded C2PA manifest, decode its
+        structure, and show you every label and claim inside it — what tool it
+        says produced the file, what actions it claims (created, edited, …),
+        and any other assertions the manifest makes.</p>
+        <p><strong>It cannot verify any of it.</strong> C2PA manifests are
+        cryptographically signed, and confirming that signature — proving the
+        manifest is genuine and the file hasn't been tampered with — needs
+        X.509 certificate handling and public-key cryptography. Python's
+        standard library has none of that, and adding a crypto dependency
+        would break the "read every line, trust nothing hidden" design this
+        whole tool relies on. So: <strong>a tampered or entirely fabricated
+        manifest would look identical to a genuine one here.</strong> This
+        tool shows you what a file claims, never proof.</p>
+        <p>That's also exactly why this exists: C2PA metadata is fragile — it
+        doesn't survive screenshots, format conversion, or re-saving. Reading
+        it now and exporting it to a durable, independent record (below) is
+        how that claim survives even after the original container can't carry
+        it anymore.</p>
+      </div>
+    </details>
+
+    <label class="field-label" for="image-file">PNG or JPEG file to read</label>
+    <input type="file" id="image-file" accept=".png,.jpg,.jpeg,image/png,image/jpeg">
+    <div class="controls">
+      <button id="read" type="button">Read manifest</button>
+    </div>
+
+    <section id="result-panel" hidden>
+      <p class="boundary" id="caveat-banner"></p>
+      <div id="status" role="status"></div>
+      <p class="external-note" id="external-note" role="status" hidden></p>
+      <pre id="manifest-view" class="manifest-view" hidden></pre>
+      <div class="controls">
+        <button id="download-sidecar" type="button" class="secondary">Download provenance sidecar (.json)</button>
+        <button id="download-premis" type="button" class="secondary">Download PREMIS record (.xml)</button>
+      </div>
+      <p class="hint">The PREMIS record is standard preservation metadata (PREMIS
+        3.0), suitable for depositing alongside the file in a repository. It
+        includes a SHA-256 fixity value so the record still supports integrity
+        checking after the embedded credentials are lost to a format migration.</p>
+    </section>
+
+    <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+  </main>
+  <script src="/c2pa.js"></script>
+</body>
+</html>
