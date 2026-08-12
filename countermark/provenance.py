@@ -175,7 +175,7 @@ def build_record(final_text, annotations=None, original_draft="", metadata=None)
 
     statement = _statement(annotations, diff, metadata)
     sidecar = {
-        "record_type": "unwatermark-provenance",
+        "record_type": "countermark-provenance",
         "version": 1,
         "author": metadata.get("author") or None,
         "assignment": metadata.get("assignment") or None,

@@ -11,7 +11,7 @@ snippets for the box-header edge cases.
 
 import unittest
 
-from unwatermark.jumbf import (
+from countermark.jumbf import (
     JumbfError,
     content_type_uuid,
     parse_description_box,

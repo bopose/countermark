@@ -12,7 +12,7 @@ import tempfile
 import unittest
 from datetime import datetime
 
-from unwatermark.bagit import make_bag
+from countermark.bagit import make_bag
 
 
 def _read(path):
@@ -34,7 +34,7 @@ def _parse_manifest(path):
 class TestMakeBag(unittest.TestCase):
 
     def setUp(self):
-        self.dir = tempfile.mkdtemp(prefix="unwatermark-bag-")
+        self.dir = tempfile.mkdtemp(prefix="countermark-bag-")
         self.addCleanup(shutil.rmtree, self.dir, ignore_errors=True)
         self.bag = os.path.join(self.dir, "bag")
 

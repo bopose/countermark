@@ -15,11 +15,11 @@ import xml.etree.ElementTree as ET
 import zlib
 from datetime import datetime, timezone
 
-from unwatermark.c2pa_reader import UNVERIFIED_CAVEAT, read_c2pa
-from unwatermark.premis import PREMIS_NS, UW_NS, detect_media_type, to_premis_xml
+from countermark.c2pa_reader import UNVERIFIED_CAVEAT, read_c2pa
+from countermark.premis import PREMIS_NS, CM_NS, detect_media_type, to_premis_xml
 
 P = f"{{{PREMIS_NS}}}"
-U = f"{{{UW_NS}}}"
+U = f"{{{CM_NS}}}"
 XSI = "{http://www.w3.org/2001/XMLSchema-instance}"
 
 FIXED_TIME = datetime(2026, 8, 12, 12, 0, 0, tzinfo=timezone.utc)
@@ -176,7 +176,7 @@ class TestEventEntities(unittest.TestCase):
         for event in self.events:
             self.assertEqual(
                 event.findtext(f"{P}linkingAgentIdentifier/{P}linkingAgentIdentifierValue"),
-                "unwatermark-1")
+                "countermark-1")
             self.assertEqual(
                 event.findtext(f"{P}linkingObjectIdentifier/{P}linkingObjectIdentifierValue"),
                 "test.png")

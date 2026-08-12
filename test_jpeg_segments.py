@@ -7,8 +7,8 @@ use programmatically-built fixtures matching that verified layout.
 
 import unittest
 
-from unwatermark.jpeg_segments import JpegError, find_c2pa_jumbf
-from unwatermark.jumbf import content_type_uuid, parse_jumbf
+from countermark.jpeg_segments import JpegError, find_c2pa_jumbf
+from countermark.jumbf import content_type_uuid, parse_jumbf
 
 
 def _app11(en, z, lbox, tbox, fragment):

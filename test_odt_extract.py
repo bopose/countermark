@@ -5,8 +5,8 @@ import os
 import unittest
 import zipfile
 
-from unwatermark import analyze, extract_odt_text
-from unwatermark.documents import extract_document_text, sniff_document_format
+from countermark import analyze, extract_odt_text
+from countermark.documents import extract_document_text, sniff_document_format
 
 OFFICE = "urn:oasis:names:tc:opendocument:xmlns:office:1.0"
 TEXT = "urn:oasis:names:tc:opendocument:xmlns:text:1.0"

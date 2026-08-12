@@ -251,7 +251,7 @@ def to_sidecar(result, source_filename=None):
     alongside a file whose embedded C2PA data won't survive format migration,
     screenshots, or re-encoding."""
     return {
-        "record_type": "unwatermark-c2pa-read",
+        "record_type": "countermark-c2pa-read",
         "version": 1,
         "source_filename": source_filename,
         "found": result["found"],

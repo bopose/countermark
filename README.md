@@ -1,4 +1,8 @@
-# unwatermark
+# countermark
+
+*In papermaking, a countermark is a second mark in the sheet, separate from the
+watermark, carrying the papermaker's own identifier. The watermark is imposed;
+the countermark is the maker saying "this is mine".*
 
 A small, local, **zero-dependency** toolkit for AI-text and AI-image
 provenance — built around one idea: **show what's verifiably there, never
@@ -41,7 +45,7 @@ command below takes multiple files and directories, needs no installation, and
 makes no network requests:
 
 ```bash
-python3 -m unwatermark --help
+python3 -m countermark --help
 ```
 
 | Command | Does |
@@ -57,14 +61,14 @@ The archivist workflow — walk a collection and drop a durable provenance
 record beside every image, as JSON, as PREMIS, or both:
 
 ```bash
-python3 -m unwatermark c2pa --recursive collection/ --sidecar-dir sidecars/ --premis-dir premis/
+python3 -m countermark c2pa --recursive collection/ --sidecar-dir sidecars/ --premis-dir premis/
 ```
 
 Later — after a migration, a copy between systems, or just on a schedule —
 re-check that nothing has rotted. A single flipped bit is enough to fail:
 
 ```bash
-python3 -m unwatermark verify --premis-dir premis/ --recursive collection/
+python3 -m countermark verify --premis-dir premis/ --recursive collection/
 ```
 
 It exits non-zero if anything mismatches, is missing, or has no record at all,
@@ -73,7 +77,7 @@ institution, wrap it as a [BagIt](https://datatracker.ietf.org/doc/html/rfc8493)
 package — image, sidecar and PREMIS record together, with checksum manifests:
 
 ```bash
-python3 -m unwatermark bag --recursive collection/ -o transfer-bag/
+python3 -m countermark bag --recursive collection/ -o transfer-bag/
 ```
 
 Other useful flags: `--json` on any command for machine-readable output,
@@ -168,16 +172,16 @@ plainly, everywhere, that **none of it is verified** — a tampered or entirely
 fabricated manifest would look identical here.
 
 Implementation is four small stdlib-only layers, each independently tested:
-a CBOR decoder (`unwatermark/cbor_decode.py` — Python has none built in), a
-JUMBF box parser (`unwatermark/jumbf.py` — the container format C2PA uses;
+a CBOR decoder (`countermark/cbor_decode.py` — Python has none built in), a
+JUMBF box parser (`countermark/jumbf.py` — the container format C2PA uses;
 its byte layout was verified against real test vectors from
 [jumbf-rs](https://github.com/scouten-adobe/jumbf-rs), since the ISO standard
-itself is paywalled), a PNG chunk reader (`unwatermark/png_chunks.py`), and a
-JPEG APP11-segment reassembler (`unwatermark/jpeg_segments.py` — JPEG splits
+itself is paywalled), a PNG chunk reader (`countermark/png_chunks.py`), and a
+JPEG APP11-segment reassembler (`countermark/jpeg_segments.py` — JPEG splits
 large manifests across multiple ~64 KB segments; that header layout isn't in
 any free spec either, so it was verified against a real file). Manifests
 using either CBOR or the older JSON-based claim encoding are both handled,
-since real files may use either. `unwatermark/c2pa_reader.py` ties it all
+since real files may use either. `countermark/c2pa_reader.py` ties it all
 together and exports a durable JSON sidecar of whatever it found — get the
 provenance claim out of the fragile container before a migration or
 screenshot loses it.
@@ -262,7 +266,7 @@ metadata that travels alongside the object. That is what
 [PREMIS](https://www.loc.gov/standards/premis/) is for.
 
 ```bash
-python3 -m unwatermark c2pa --recursive collection/ --premis-dir premis/
+python3 -m countermark c2pa --recursive collection/ --premis-dir premis/
 ```
 
 There's also a **Download PREMIS record (.xml)** button on the `/c2pa` page.
@@ -403,8 +407,8 @@ still passes on a copy without it.
 ```
 server.py                       stdlib HTTP server, localhost only, routes for all 3 pages
 
-unwatermark/
-  cli.py                        command-line interface (python3 -m unwatermark)
+countermark/
+  cli.py                        command-line interface (python3 -m countermark)
   __main__.py                   entry point so the CLI runs without installation
   scan.py                       hidden-character + homoglyph scanner
   clean.py                      text cleaning (invisible-char removal, homoglyph fix)

@@ -1,6 +1,6 @@
 """Command-line interface — the batch counterpart to the web UI.
 
-    python3 -m unwatermark <command> [files...]
+    python3 -m countermark <command> [files...]
 
 The web UI handles one pasted document at a time, which is the wrong shape for
 an archive: nobody feeds ten thousand files through a browser form. Every
@@ -342,7 +342,7 @@ def cmd_diff(args):
 
 def build_parser():
     parser = argparse.ArgumentParser(
-        prog="unwatermark",
+        prog="countermark",
         description="Inspect text for hidden characters and images for C2PA "
                     "provenance. Everything runs locally; no network requests.",
     )

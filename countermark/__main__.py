@@ -1,4 +1,4 @@
-"""Entry point so the CLI runs with no installation: python3 -m unwatermark"""
+"""Entry point so the CLI runs with no installation: python3 -m countermark"""
 
 import sys
 

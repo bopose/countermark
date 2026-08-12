@@ -22,7 +22,7 @@ import json
 import os
 import unittest
 
-from unwatermark.c2pa_reader import UNVERIFIED_CAVEAT, read_c2pa, to_sidecar, to_summary_text
+from countermark.c2pa_reader import UNVERIFIED_CAVEAT, read_c2pa, to_sidecar, to_summary_text
 
 SAMPLES = os.path.join(os.path.dirname(__file__), "samples")
 

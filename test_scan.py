@@ -2,7 +2,7 @@
 
 import unittest
 
-from unwatermark import analyze
+from countermark import analyze
 
 
 class TestScan(unittest.TestCase):

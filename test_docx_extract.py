@@ -4,7 +4,7 @@ import io
 import unittest
 import zipfile
 
-from unwatermark import extract_docx_text
+from countermark import extract_docx_text
 
 _NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 

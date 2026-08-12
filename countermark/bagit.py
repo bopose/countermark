@@ -87,7 +87,7 @@ def make_bag(bag_dir, payload, *, bag_info=None, timestamp=None):
 
     # bag-info.txt — human-readable metadata about the bag itself.
     info = {
-        "Bag-Software-Agent": "unwatermark",
+        "Bag-Software-Agent": "countermark",
         "Payload-Oxum": _payload_oxum(bag_dir),
     }
     if timestamp is not None:

@@ -6,7 +6,7 @@ Test vectors marked RFC are the canonical examples from RFC 8949 Appendix A.
 import struct
 import unittest
 
-from unwatermark.cbor_decode import CborError, loads
+from countermark.cbor_decode import CborError, loads
 
 
 class TestCborDecode(unittest.TestCase):

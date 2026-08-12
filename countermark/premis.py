@@ -53,7 +53,7 @@ PREMIS_SCHEMA_LOCATION = (
 # Our own namespace for the extension payload. PREMIS allows any well-formed
 # XML inside an extension (xs:any namespace="##any"), but it must be namespaced
 # so a repository can tell whose extension it is.
-UW_NS = "urn:unwatermark:c2pa:1"
+CM_NS = "urn:countermark:c2pa:1"
 
 _EVENT_TYPE_AUTHORITY = "http://id.loc.gov/vocabulary/preservation/eventType"
 _EVENT_OUTCOME_AUTHORITY = "http://id.loc.gov/vocabulary/preservation/eventOutcome"
@@ -64,7 +64,7 @@ _EVENT_TYPES = {
     "metadata extraction": _EVENT_TYPE_AUTHORITY + "/mee",
 }
 
-_AGENT_NAME = "unwatermark"
+_AGENT_NAME = "countermark"
 _AGENT_NOTE = (
     "Reads C2PA provenance without verifying signatures; see eventOutcomeDetail."
 )
@@ -111,19 +111,19 @@ def _extension_node(parent, result):
     with XPath, and each decoded assertion's value is carried verbatim as JSON
     text rather than being reshaped into a lossy XML rendering.
     """
-    root = ET.SubElement(parent, f"{{{UW_NS}}}c2pa", {
+    root = ET.SubElement(parent, f"{{{CM_NS}}}c2pa", {
         "verified": "false",
         "embeddedManifest": "true" if result.get("found") else "false",
     })
-    ET.SubElement(root, f"{{{UW_NS}}}caveat").text = result.get("caveat", UNVERIFIED_CAVEAT)
+    ET.SubElement(root, f"{{{CM_NS}}}caveat").text = result.get("caveat", UNVERIFIED_CAVEAT)
 
     if result.get("error"):
-        ET.SubElement(root, f"{{{UW_NS}}}error").text = result["error"]
+        ET.SubElement(root, f"{{{CM_NS}}}error").text = result["error"]
 
     if result.get("external_manifest_url"):
-        ext = ET.SubElement(root, f"{{{UW_NS}}}externalManifest")
-        ET.SubElement(ext, f"{{{UW_NS}}}url").text = result["external_manifest_url"]
-        ET.SubElement(ext, f"{{{UW_NS}}}note").text = (
+        ext = ET.SubElement(root, f"{{{CM_NS}}}externalManifest")
+        ET.SubElement(ext, f"{{{CM_NS}}}url").text = result["external_manifest_url"]
+        ET.SubElement(ext, f"{{{CM_NS}}}note").text = (
             "This file declares a manifest stored outside itself. It was not "
             "fetched; its contents are therefore not recorded here."
         )
@@ -135,7 +135,7 @@ def _extension_node(parent, result):
 
 
 def _manifest_node(parent, node):
-    el = ET.SubElement(parent, f"{{{UW_NS}}}box", {
+    el = ET.SubElement(parent, f"{{{CM_NS}}}box", {
         k: v for k, v in (
             ("label", node.get("label")),
             ("meaning", node.get("uuid_meaning")),
@@ -146,7 +146,7 @@ def _manifest_node(parent, node):
             _manifest_node(el, child)
         else:
             content = child.get("content", {})
-            leaf = ET.SubElement(el, f"{{{UW_NS}}}content", {
+            leaf = ET.SubElement(el, f"{{{CM_NS}}}content", {
                 k: v for k, v in (
                     ("type", child.get("type")),
                     ("decodedAs", content.get("decoded_as") or "none"),
@@ -299,7 +299,7 @@ def to_premis_xml(data, result, *, filename, identifier=None, timestamp=None,
     """Build the PREMIS record and return it as an indented XML string."""
     ET.register_namespace("premis", PREMIS_NS)
     ET.register_namespace("xsi", XSI_NS)
-    ET.register_namespace("uw", UW_NS)
+    ET.register_namespace("cm", CM_NS)
     root = build_premis_tree(data, result, filename=filename, identifier=identifier,
                              timestamp=timestamp, tool_version=tool_version)
     ET.indent(root, space="  ")

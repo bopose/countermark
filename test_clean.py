@@ -2,7 +2,7 @@
 
 import unittest
 
-from unwatermark import clean
+from countermark import clean
 
 ZWSP = "​"
 NBSP = " "

@@ -4,7 +4,7 @@ import struct
 import unittest
 import zlib
 
-from unwatermark.png_chunks import PngError, find_c2pa_chunk, iter_png_chunks
+from countermark.png_chunks import PngError, find_c2pa_chunk, iter_png_chunks
 
 _SIGNATURE = bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
 

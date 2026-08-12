@@ -15,7 +15,7 @@ from pathlib import Path
 
 import urllib.parse
 
-from unwatermark import (
+from countermark import (
     analyze, clean, diff_drafts, build_record, extract_document_text,
     read_c2pa, c2pa_to_sidecar, c2pa_to_summary_text, to_premis_xml,
 )

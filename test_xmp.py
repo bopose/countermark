@@ -10,7 +10,7 @@ import struct
 import unittest
 import zlib
 
-from unwatermark.xmp import find_external_manifest_url
+from countermark.xmp import find_external_manifest_url
 
 _PNG_SIG = bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
 

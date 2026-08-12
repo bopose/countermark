@@ -8,12 +8,12 @@ import tempfile
 import unittest
 import zlib
 
-from unwatermark.c2pa_reader import read_c2pa
-from unwatermark.fixity import (
+from countermark.c2pa_reader import read_c2pa
+from countermark.fixity import (
     FILE_MISSING, MISMATCH, NO_RECORD, OK, UNREADABLE_RECORD,
     file_digest, read_premis_fixity, summarise, verify_against_records,
 )
-from unwatermark.premis import to_premis_xml
+from countermark.premis import to_premis_xml
 
 _PNG_SIG = bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
 
@@ -31,7 +31,7 @@ def _png(seed=b""):
 class FixityTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.dir = tempfile.mkdtemp(prefix="unwatermark-fixity-")
+        self.dir = tempfile.mkdtemp(prefix="countermark-fixity-")
         self.addCleanup(shutil.rmtree, self.dir, ignore_errors=True)
         self.files = os.path.join(self.dir, "files")
         self.records = os.path.join(self.dir, "premis")

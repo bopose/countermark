@@ -11,8 +11,8 @@ import struct
 import unittest
 import zlib
 
-from unwatermark.c2pa_reader import UNVERIFIED_CAVEAT, read_c2pa_png, to_sidecar, to_summary_text
-from unwatermark.jumbf import content_type_uuid
+from countermark.c2pa_reader import UNVERIFIED_CAVEAT, read_c2pa_png, to_sidecar, to_summary_text
+from countermark.jumbf import content_type_uuid
 
 _PNG_SIG = bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
 
@@ -122,7 +122,7 @@ class TestReadC2paPng(unittest.TestCase):
         self.assertEqual(sig_content["uuid"], "Claim Signature")
 
     def test_cbor_claim_also_decoded(self):
-        import unwatermark.cbor_decode as cbor
+        import countermark.cbor_decode as cbor
         # {"recorder": "TestTool"} hand-encoded as CBOR: map(1) { text(8)"recorder": text(8)"TestTool" }
         cbor_payload = (
             b"\xa1"                      # map, 1 pair
@@ -191,7 +191,7 @@ class TestRendering(unittest.TestCase):
         dumped = json.dumps(sidecar)  # must not raise
         self.assertIn("photo.png", dumped)
         self.assertEqual(sidecar["caveat"], UNVERIFIED_CAVEAT)
-        self.assertEqual(sidecar["record_type"], "unwatermark-c2pa-read")
+        self.assertEqual(sidecar["record_type"], "countermark-c2pa-read")
 
 
 if __name__ == "__main__":

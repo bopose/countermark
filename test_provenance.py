@@ -2,7 +2,7 @@
 
 import unittest
 
-from unwatermark import diff_drafts, build_record
+from countermark import diff_drafts, build_record
 
 
 class TestDiff(unittest.TestCase):

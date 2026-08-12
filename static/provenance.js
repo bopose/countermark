@@ -6,7 +6,7 @@ function announce(message) {
   $("sr-status").textContent = message;
 }
 
-// Mirror of unwatermark/provenance.py LABELS (key -> shown text).
+// Mirror of countermark/provenance.py LABELS (key -> shown text).
 const LABELS = [
   ["self", "Written by me"],
   ["ai-grammar", "My draft — AI corrected grammar/spelling only"],

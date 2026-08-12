@@ -16,7 +16,7 @@ import unittest
 import zipfile
 import zlib
 
-from unwatermark.cli import main
+from countermark.cli import main
 
 ZWSP = "​"
 NBSP = " "
@@ -46,7 +46,7 @@ def run(argv):
 class CliTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.dir = tempfile.mkdtemp(prefix="unwatermark-cli-")
+        self.dir = tempfile.mkdtemp(prefix="countermark-cli-")
         self.addCleanup(shutil.rmtree, self.dir, ignore_errors=True)
 
     def path(self, name):
@@ -267,7 +267,7 @@ class TestC2pa(CliTestCase):
         self.assertTrue(os.path.exists(dest))
         with open(dest, encoding="utf-8") as f:
             record = json.load(f)
-        self.assertEqual(record["record_type"], "unwatermark-c2pa-read")
+        self.assertEqual(record["record_type"], "countermark-c2pa-read")
         self.assertEqual(record["source_filename"], "a.png")
         # Even a "nothing found" record must carry the caveat.
         self.assertIn("NOT cryptographically verified", record["caveat"])
