@@ -45,7 +45,7 @@ def _all_samples():
         return []
     return sorted(
         f for f in os.listdir(SAMPLES)
-        if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".avif"))
+        if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".avif", ".heic", ".heif"))
     )
 
 
@@ -64,6 +64,7 @@ NO_MANIFEST = [
     "sample1.webp",
     "test_xmp.webp",
     "sample1.avif",
+    "sample1.heif",
 ]
 
 # One representative file per generator vendor, to prove the reader isn't
@@ -520,6 +521,46 @@ class TestRealSignedAvif(unittest.TestCase):
         # both ways: we can't condemn, and we can't vouch either.
         self.assertEqual(self.reference["validation_state"], "Valid")
         self.assertEqual(self.result["caveat"], UNVERIFIED_CAVEAT)
+
+
+class TestRealSignedHeic(unittest.TestCase):
+    """The HEIC/HEIF path, validated against real signed files.
+
+    Generated like the WebP/AVIF samples (official c2patool v0.27.14,
+    built-in test signer, over c2pa-rs's unsigned fixtures) — no public
+    corpus has signed HEIC either. Two files on purpose: the .heic is
+    'heic'-major (the iPhone-photo shape), while the .heif is 'mif1'-major
+    with 'heic' only in its compatible brands — the generic-HEIF layout
+    that a naive major-brand-only check would miss.
+    """
+
+    CASES = ["c2patool-20260813-signed.heic", "c2patool-20260813-signed.heif"]
+
+    def test_manifest_found_and_matches_reference_implementation(self):
+        for name in self.CASES:
+            if not _has(name):
+                continue
+            with self.subTest(file=name):
+                result = read_c2pa(_read(name))
+                self.assertTrue(result["found"])
+                self.assertIsNone(result["error"])
+                self.assertEqual(result["manifest"]["uuid_meaning"], "C2PA Manifest Store")
+                with open(_sample(name + ".json"), encoding="utf-8") as f:
+                    reference = json.load(f)
+                self.assertEqual(
+                    {c["label"] for c in result["manifest"]["children"]},
+                    set(reference["manifests"].keys()),
+                )
+
+    def test_bmff_hard_binding_present_like_avif(self):
+        for name in self.CASES:
+            if not _has(name):
+                continue
+            with self.subTest(file=name):
+                result = read_c2pa(_read(name))
+                store = next(c for c in result["manifest"]["children"][0]["children"]
+                             if c["label"] == "c2pa.assertions")
+                self.assertIn("c2pa.hash.bmff.v3", {c["label"] for c in store["children"]})
 
 
 @unittest.skipUnless(_has("adobe-20220124-CA.jpg"), "sample file not present")

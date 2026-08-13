@@ -11,7 +11,7 @@
     <p class="nav"><a href="/">← Hidden-character inspector</a> · <a href="/provenance">Provenance record builder</a></p>
     <h1>C2PA manifest reader</h1>
     <p class="lede">
-      PNG, JPEG, WebP, and AVIF image files can carry an embedded "Content Credentials"
+      PNG, JPEG, WebP, AVIF, and HEIC image files can carry an embedded "Content Credentials"
       manifest (the C2PA standard) claiming things like what tool produced the
       image. This reads that manifest and shows exactly what it says.
     </p>
@@ -40,8 +40,8 @@
       </div>
     </details>
 
-    <label class="field-label" for="image-file">PNG, JPEG, WebP, or AVIF file to read</label>
-    <input type="file" id="image-file" accept=".png,.jpg,.jpeg,.webp,.avif,image/png,image/jpeg,image/webp,image/avif">
+    <label class="field-label" for="image-file">PNG, JPEG, WebP, AVIF, or HEIC file to read</label>
+    <input type="file" id="image-file" accept=".png,.jpg,.jpeg,.webp,.avif,.heic,.heif,image/png,image/jpeg,image/webp,image/avif,image/heic,image/heif">
     <div class="controls">
       <button id="read" type="button">Read manifest</button>
     </div>

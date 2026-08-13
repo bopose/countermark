@@ -10,7 +10,7 @@ matching that layout.
 import unittest
 
 from countermark.bmff_boxes import (
-    BmffError, find_c2pa_manifest, is_avif, iter_boxes, iter_xmp_payloads,
+    BmffError, find_c2pa_manifest, is_avif, is_heif, iter_boxes, iter_xmp_payloads,
 )
 
 _C2PA_UUID = bytes.fromhex("d8fec3d61b0e483c92975828877ec481")
@@ -101,6 +101,34 @@ class TestIsAvif(unittest.TestCase):
     def test_garbage_is_not_avif_and_does_not_raise(self):
         self.assertFalse(is_avif(b"random bytes, nothing like bmff"))
         self.assertFalse(is_avif(b""))
+
+
+class TestIsHeif(unittest.TestCase):
+
+    def test_major_brand_heic(self):
+        self.assertTrue(is_heif(_ftyp(b"heic", b"mif1", b"heic")))
+
+    def test_mif1_major_with_heic_compatible(self):
+        # The layout of c2pa-rs's real sample1.heif fixture.
+        self.assertTrue(is_heif(_ftyp(b"mif1", b"mif1", b"heic")))
+
+    def test_msf1_image_sequence_accepted(self):
+        self.assertTrue(is_heif(_ftyp(b"msf1", b"hevc")))
+
+    def test_mp4_is_not_heif(self):
+        self.assertFalse(is_heif(_ftyp(b"isom", b"iso2", b"mp41")))
+
+    def test_avif_with_mif1_compatible_matches_both_so_avif_must_win(self):
+        # AVIF is HEIF-based; files like this satisfy is_heif too. The
+        # reader resolves it by checking is_avif first — pinned here so the
+        # overlap is a documented fact, not a surprise.
+        data = _ftyp(b"avif", b"avif", b"mif1", b"miaf")
+        self.assertTrue(is_avif(data))
+        self.assertTrue(is_heif(data))
+
+    def test_garbage_is_not_heif_and_does_not_raise(self):
+        self.assertFalse(is_heif(b"random bytes"))
+        self.assertFalse(is_heif(b""))
 
 
 class TestFindC2paManifest(unittest.TestCase):

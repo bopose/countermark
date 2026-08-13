@@ -246,16 +246,33 @@ class TestReadC2paWebpAndAvif(unittest.TestCase):
         self.assertFalse(result["found"])
         self.assertIsNotNone(result["error"])
 
-    def test_heic_is_refused_by_name_not_misread(self):
-        heic = _bmff_box(b"ftyp", b"heic" + b"\x00\x00\x00\x00" + b"mif1")
+    def test_heic_manifest_found_via_dispatch(self):
+        heic = (_bmff_box(b"ftyp", b"heic" + b"\x00\x00\x00\x00" + b"mif1")
+                + _bmff_box(b"mdat", b"fake image data")
+                + _c2pa_uuid_box(_build_c2pa_jumbf()))
         result = read_c2pa(heic)
+        self.assertTrue(result["found"])
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["manifest"]["uuid_meaning"], "C2PA Manifest Store")
+
+    def test_mif1_major_heif_dispatches_too(self):
+        # Real HEIF files are often 'mif1'-major with 'heic' only compatible.
+        heif = (_bmff_box(b"ftyp", b"mif1" + b"\x00\x00\x00\x00" + b"mif1heic")
+                + _c2pa_uuid_box(_build_c2pa_jumbf()))
+        result = read_c2pa(heif)
+        self.assertTrue(result["found"])
+        self.assertIsNone(result["error"])
+
+    def test_mp4_is_refused_by_name_not_misread(self):
+        mp4 = _bmff_box(b"ftyp", b"isom" + b"\x00\x00\x00\x00" + b"iso2mp41")
+        result = read_c2pa(mp4)
         self.assertFalse(result["found"])
-        self.assertIn(b"heic".decode(), result["error"])
+        self.assertIn(b"isom".decode(), result["error"])
 
     def test_unrecognised_header_names_all_supported_formats(self):
         result = read_c2pa(b"GIF89a...")
         self.assertFalse(result["found"])
-        for fmt in ("PNG", "JPEG", "WebP", "AVIF"):
+        for fmt in ("PNG", "JPEG", "WebP", "AVIF", "HEIC"):
             self.assertIn(fmt, result["error"])
 
 

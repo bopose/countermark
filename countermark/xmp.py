@@ -84,11 +84,12 @@ def _webp_xmp_packets(data):
             yield packet
 
 
-def _avif_xmp_packets(data):
-    # Only covers XMP in a top-level uuid box (where c2pa-rs writes it). AVIF
-    # files can instead store XMP as a HEIF metadata item, which would need a
-    # meta/iinf/iloc parser this tool doesn't have — those report nothing,
-    # which best-effort detection permits (a miss just means we stay silent).
+def _bmff_xmp_packets(data):
+    # Covers AVIF and HEIC alike: only XMP in a top-level uuid box (where
+    # c2pa-rs writes it). HEIF-family files can instead store XMP as a
+    # metadata item, which would need a meta/iinf/iloc parser this tool
+    # doesn't have — those report nothing, which best-effort detection
+    # permits (a miss just means we stay silent).
     from .bmff_boxes import iter_xmp_payloads  # local import avoids a cycle
 
     for payload in iter_xmp_payloads(data):
@@ -100,11 +101,12 @@ def _avif_xmp_packets(data):
 def find_external_manifest_url(data, fmt):
     """Return an external C2PA manifest URL declared in the file's XMP, or None.
 
-    `fmt` is "png", "jpeg", "webp", or "avif". Never raises: a malformed
-    container just means no pointer is reported.
+    `fmt` is "png", "jpeg", "webp", "avif", or "heic". Never raises: a
+    malformed container just means no pointer is reported.
     """
     finder = {"png": _png_xmp_packets, "jpeg": _jpeg_xmp_packets,
-              "webp": _webp_xmp_packets, "avif": _avif_xmp_packets}.get(fmt)
+              "webp": _webp_xmp_packets, "avif": _bmff_xmp_packets,
+              "heic": _bmff_xmp_packets}.get(fmt)
     if finder is None:
         return None
     try:

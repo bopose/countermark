@@ -123,6 +123,13 @@ class TestAvifExternalManifest(unittest.TestCase):
     def test_avif_without_xmp_box_returns_none(self):
         self.assertIsNone(find_external_manifest_url(self._avif_with_xmp(b""), "avif"))
 
+    def test_heic_uses_the_same_bmff_uuid_box(self):
+        xmp = XMP_TEMPLATE.format(url="https://example.org/h.c2pa")
+        self.assertEqual(
+            find_external_manifest_url(self._avif_with_xmp(xmp.encode("utf-8")), "heic"),
+            "https://example.org/h.c2pa",
+        )
+
 
 class TestJpegExternalManifest(unittest.TestCase):
 

@@ -32,7 +32,7 @@ Then open **<http://127.0.0.1:8765>**. Four pages, linked from each other:
 |---|---|---|
 | Hidden-character inspector | `/` | Paste text, find and clean hidden/disguised Unicode characters |
 | Provenance record builder | `/provenance` | Build your own "here's how I wrote this" record, with a real draft-comparison |
-| C2PA manifest reader | `/c2pa` | Read (never verify) the Content Credentials manifest in a PNG, JPEG, WebP, or AVIF |
+| C2PA manifest reader | `/c2pa` | Read (never verify) the Content Credentials manifest in a PNG, JPEG, WebP, AVIF, or HEIC |
 | What detectors can't show | `/detectors` | A printable, sourced summary of the published evidence on AI-detector false positives |
 
 Optional: `python3 server.py --port 9000` to use a different port.
@@ -146,7 +146,7 @@ didn't cheat:
 The record states plainly that labels are a declaration and the draft
 comparison is the computed evidence. It does not claim to prove authorship.
 
-### 3. C2PA manifest reader (PNG, JPEG, WebP, and AVIF)
+### 3. C2PA manifest reader (PNG, JPEG, WebP, AVIF, and HEIC)
 
 Reads the "Content Credentials" (C2PA) manifest some image files carry — the
 metadata this whole project was originally prompted by, since it's exactly
@@ -181,7 +181,7 @@ JPEG APP11-segment reassembler (`countermark/jpeg_segments.py` — JPEG splits
 large manifests across multiple ~64 KB segments; that header layout isn't in
 any free spec either, so it was verified against a real file), a WebP RIFF
 chunk reader (`countermark/riff_chunks.py` — C2PA lives in a top-level
-`C2PA` chunk), and an ISO-BMFF box reader for AVIF
+`C2PA` chunk), and an ISO-BMFF box reader for AVIF and HEIC/HEIF
 (`countermark/bmff_boxes.py` — C2PA lives in a top-level `uuid` box whose
 payload layout comes from the C2PA spec and was confirmed against the
 reference implementation, [c2pa-rs](https://github.com/contentauth/c2pa-rs)'s
@@ -192,20 +192,21 @@ together and exports a durable JSON sidecar of whatever it found — get the
 provenance claim out of the fragile container before a migration or
 screenshot loses it.
 
-**Validated against 34 real files, not just hand-built fixtures.** The full
+**Validated against 37 real files, not just hand-built fixtures.** The full
 top-level JPEG corpus from the official
 [C2PA public-testfiles](https://github.com/c2pa-org/public-testfiles)
 repository (CC BY-SA), plus real PNGs from
 [example-assets](https://github.com/contentauth/example-assets) (MIT) and
-real WebP/AVIF files from c2pa-rs's fixtures (MIT), live in `samples/` and
+real WebP/AVIF/HEIF files from c2pa-rs's fixtures (MIT), live in `samples/` and
 drive the regression tests in `test_c2pa_reader_real_files.py`. Coverage
 includes:
 
-- **All four container formats** — JPEG (multi-segment APP11 reassembly),
-  PNG (single `caBX` chunk), WebP (RIFF `C2PA` chunk), and AVIF (BMFF
-  `uuid` box). The signed WebP and AVIF samples had to be generated with
-  the reference implementation's own tooling, because no public corpus has
-  any — the story below.
+- **All five supported formats, across three containers** — JPEG
+  (multi-segment APP11 reassembly), PNG (single `caBX` chunk), WebP (RIFF
+  `C2PA` chunk), and AVIF and HEIC (both BMFF `uuid` box). The signed WebP,
+  AVIF, and HEIC samples had to be generated with the reference
+  implementation's own tooling, because no public corpus has any — the
+  story below.
 - **Four independent generators** — Adobe (c2pa-rs), Nikon (Z 9 camera),
   Truepic (Lens SDK), and OpenAI/ChatGPT (GPT-4o) — so the reader isn't
   accidentally specific to one vendor's output.
@@ -267,20 +268,23 @@ it checks neither signatures nor trust lists. **A reader of our output cannot
 tell trusted from untrusted, nor valid from tampered.** That distinction is
 pinned by a test, so it can't quietly erode.
 
-**The WebP and AVIF paths are validated with signed real files too — which
-required making them.** No public C2PA corpus ships a *signed* WebP or AVIF:
-the official repository is DNG/JPEG/PNG only, and the WebP/AVIF fixtures in
-c2pa-rs and c2pa-js are all unsigned source images. So the two signed samples
-(`c2patool-20260813-signed.webp` / `.avif`) were generated with the official
-prebuilt `c2patool` — the reference implementation's CLI, using its built-in
-test signer — run over c2pa-rs's own unsigned fixtures. That makes them
-exactly what the JPEG corpus is: genuine c2pa-rs-written bytes. c2patool's
-manifest report is committed alongside each file, and the tests assert our
-parse agrees with it on manifest URNs, generator, and assertions. The AVIF
-sample earns its place the way `ChatGPT_Image.png` did: BMFF formats bind the
-manifest to the image with `c2pa.hash.bmff.v3` rather than the `c2pa.hash.data`
-every JPEG, PNG, and WebP uses, so it exercises a manifest shape none of the
-other 32 samples can. The unsigned fixtures stayed in the corpus as negatives —
+**The WebP, AVIF, and HEIC paths are validated with signed real files too —
+which required making them.** No public C2PA corpus ships a *signed* WebP,
+AVIF, or HEIC: the official repository is DNG/JPEG/PNG only, and the fixtures
+in c2pa-rs and c2pa-js are all unsigned source images. So the signed samples
+(`c2patool-20260813-signed.webp` / `.avif` / `.heic` / `.heif`) were generated
+with the official prebuilt `c2patool` — the reference implementation's CLI,
+using its built-in test signer — run over c2pa-rs's own unsigned fixtures.
+That makes them exactly what the JPEG corpus is: genuine c2pa-rs-written
+bytes. c2patool's manifest report is committed alongside each file, and the
+tests assert our parse agrees with it on manifest URNs, generator, and
+assertions. The BMFF samples earn their place the way `ChatGPT_Image.png`
+did: AVIF and HEIC bind the manifest to the image with `c2pa.hash.bmff.v3`
+rather than the `c2pa.hash.data` every JPEG, PNG, and WebP uses — a manifest
+shape no other sample exercises — and the signed HEIC/HEIF pair covers both
+brand layouts, `heic`-major (the iPhone-photo shape) and `mif1`-major with
+`heic` only among the compatible brands, which a naive major-brand-only
+check would miss. The unsigned fixtures stayed in the corpus as negatives —
 most usefully `test_xmp.webp`, a real metadata-heavy WebP whose XMP keyword
 list literally contains the string "C2PA" but which carries no manifest: the
 false-positive bait a provenance reader must not take.
@@ -453,7 +457,7 @@ countermark/
   png_chunks.py                 PNG chunk reader (finds the C2PA 'caBX' chunk)
   jpeg_segments.py              JPEG marker/APP11 segment reader and reassembler
   riff_chunks.py                WebP RIFF chunk reader (finds the 'C2PA' chunk)
-  bmff_boxes.py                 ISO-BMFF box reader for AVIF (finds the C2PA 'uuid' box)
+  bmff_boxes.py                 ISO-BMFF box reader for AVIF/HEIC (finds the C2PA 'uuid' box)
   xmp.py                        finds external-manifest pointers in XMP metadata
 
 static/
@@ -463,10 +467,10 @@ static/
   detectors.html                printable, sourced explainer on detector false positives
   style.css                     shared styles (light/dark aware)
 
-samples/                        real-world fixtures; ~24 MB, optional (tests skip if absent)
-                                34 C2PA images: 26 JPEGs from c2pa-org/public-testfiles
-                                (CC BY-SA) + PNGs, WebPs and AVIFs from
-                                contentauth/example-assets & c2pa-rs (MIT), incl. two
+samples/                        real-world fixtures; ~27 MB, optional (tests skip if absent)
+                                37 C2PA images: 26 JPEGs from c2pa-org/public-testfiles
+                                (CC BY-SA) + PNGs, WebPs, AVIFs and HEIFs from
+                                contentauth/example-assets & c2pa-rs (MIT), incl. four
                                 c2patool-signed files with their reference reports
                                 1 LibreOffice-produced .odt for the mixed-content test
 
@@ -501,7 +505,7 @@ adaptations open and attributed as they spread.
 **Third-party material.** The files in `samples/` are test fixtures under their
 own terms: the C2PA JPEGs are CC BY-SA from
 [c2pa-org/public-testfiles](https://github.com/c2pa-org/public-testfiles), and
-the PNGs, WebPs and AVIF are MIT from
+the PNGs, WebPs, AVIFs and HEIFs are MIT from
 [contentauth](https://github.com/contentauth/example-assets) repositories
 (example-assets and c2pa-rs). Research quoted
 in the explainer belongs to its authors and is cited in the document.

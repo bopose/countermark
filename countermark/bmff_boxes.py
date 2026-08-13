@@ -68,18 +68,41 @@ def iter_boxes(data):
         offset = end
 
 
+def _ftyp_brands(data):
+    """Return the leading 'ftyp' box's brands (major first, then compatible),
+    or None if the file doesn't start with a well-formed ftyp box."""
+    if len(data) < 16 or data[4:8] != b"ftyp":
+        return None
+    size = int.from_bytes(data[0:4], "big")
+    if size < 16 or size > len(data) or size % 4 != 0:
+        return None
+    # Payload: 4-byte major brand, 4-byte minor version, then compatible brands.
+    return [data[8:12]] + [data[i:i + 4] for i in range(16, size, 4)]
+
+
 def is_avif(data):
     """True if the file starts with an 'ftyp' box declaring an AVIF brand
     ('avif' still image or 'avis' image sequence), as major or compatible
     brand. Never raises — anything malformed is simply not AVIF."""
-    if len(data) < 16 or data[4:8] != b"ftyp":
-        return False
-    size = int.from_bytes(data[0:4], "big")
-    if size < 16 or size > len(data) or size % 4 != 0:
-        return False
-    # Payload: 4-byte major brand, 4-byte minor version, then compatible brands.
-    brands = [data[8:12]] + [data[i:i + 4] for i in range(16, size, 4)]
-    return b"avif" in brands or b"avis" in brands
+    brands = _ftyp_brands(data)
+    return brands is not None and (b"avif" in brands or b"avis" in brands)
+
+
+# HEVC-coded still images / sequences, plus mif1/msf1, the codec-neutral HEIF
+# structural brands (real files are often 'mif1'-major with 'heic' compatible).
+_HEIF_BRANDS = {b"heic", b"heix", b"heim", b"heis",
+                b"hevc", b"hevx", b"hevm", b"hevs",
+                b"mif1", b"msf1"}
+
+
+def is_heif(data):
+    """True if the file's 'ftyp' box declares a HEIF-family brand.
+
+    Note: AVIF is itself HEIF-based, so an AVIF file carrying 'mif1' among
+    its compatible brands matches this too — callers must check is_avif()
+    first if they want the two told apart. Never raises."""
+    brands = _ftyp_brands(data)
+    return brands is not None and not _HEIF_BRANDS.isdisjoint(brands)
 
 
 def find_c2pa_manifest(data):
