@@ -1,4 +1,5 @@
-"""Find XMP metadata in PNG/JPEG, and the external-manifest pointer inside it.
+"""Find XMP metadata in PNG/JPEG/WebP/AVIF, and the external-manifest pointer
+inside it.
 
 A C2PA manifest is usually embedded in the file, but it can also live
 *outside* it: the asset carries only an XMP `dcterms:provenance` URL pointing
@@ -72,13 +73,38 @@ def _jpeg_xmp_packets(data):
             yield packet
 
 
+def _webp_xmp_packets(data):
+    from .riff_chunks import iter_webp_chunks  # local import avoids a cycle
+
+    for fourcc, payload in iter_webp_chunks(data):
+        if fourcc != b"XMP ":  # the FourCC really is "XMP" plus a space
+            continue
+        packet = _extract_packet(payload)
+        if packet:
+            yield packet
+
+
+def _avif_xmp_packets(data):
+    # Only covers XMP in a top-level uuid box (where c2pa-rs writes it). AVIF
+    # files can instead store XMP as a HEIF metadata item, which would need a
+    # meta/iinf/iloc parser this tool doesn't have — those report nothing,
+    # which best-effort detection permits (a miss just means we stay silent).
+    from .bmff_boxes import iter_xmp_payloads  # local import avoids a cycle
+
+    for payload in iter_xmp_payloads(data):
+        packet = _extract_packet(payload)
+        if packet:
+            yield packet
+
+
 def find_external_manifest_url(data, fmt):
     """Return an external C2PA manifest URL declared in the file's XMP, or None.
 
-    `fmt` is "png" or "jpeg". Never raises: a malformed container just means
-    no pointer is reported.
+    `fmt` is "png", "jpeg", "webp", or "avif". Never raises: a malformed
+    container just means no pointer is reported.
     """
-    finder = {"png": _png_xmp_packets, "jpeg": _jpeg_xmp_packets}.get(fmt)
+    finder = {"png": _png_xmp_packets, "jpeg": _jpeg_xmp_packets,
+              "webp": _webp_xmp_packets, "avif": _avif_xmp_packets}.get(fmt)
     if finder is None:
         return None
     try:

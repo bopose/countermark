@@ -16,7 +16,7 @@ from .docx_extract import extract_docx_text
 from .odt_extract import extract_odt_text
 from .documents import DOCUMENT_SUFFIXES, extract_document_text, sniff_document_format
 from .c2pa_reader import (
-    read_c2pa, read_c2pa_png, read_c2pa_jpeg,
+    read_c2pa, read_c2pa_png, read_c2pa_jpeg, read_c2pa_webp, read_c2pa_avif,
     to_sidecar as c2pa_to_sidecar, to_summary_text as c2pa_to_summary_text,
 )
 from .premis import to_premis_xml
@@ -25,6 +25,7 @@ __all__ = [
     "analyze", "clean", "diff_drafts", "build_record",
     "extract_docx_text", "extract_odt_text", "extract_document_text",
     "sniff_document_format", "DOCUMENT_SUFFIXES",
-    "read_c2pa", "read_c2pa_png", "read_c2pa_jpeg", "c2pa_to_sidecar", "c2pa_to_summary_text",
+    "read_c2pa", "read_c2pa_png", "read_c2pa_jpeg", "read_c2pa_webp", "read_c2pa_avif",
+    "c2pa_to_sidecar", "c2pa_to_summary_text",
     "to_premis_xml",
 ]

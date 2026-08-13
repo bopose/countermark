@@ -78,6 +78,52 @@ class TestPngExternalManifest(unittest.TestCase):
         self.assertIsNone(find_external_manifest_url(b"not a png at all", "png"))
 
 
+class TestWebpExternalManifest(unittest.TestCase):
+
+    @staticmethod
+    def _webp_with_xmp(xmp_bytes):
+        chunk = b"XMP " + len(xmp_bytes).to_bytes(4, "little") + xmp_bytes
+        if len(xmp_bytes) % 2:
+            chunk += b"\x00"
+        body = b"WEBP" + chunk
+        return b"RIFF" + len(body).to_bytes(4, "little") + body
+
+    def test_finds_url_in_xmp_chunk(self):
+        xmp = XMP_TEMPLATE.format(url="https://example.org/w.c2pa")
+        self.assertEqual(
+            find_external_manifest_url(self._webp_with_xmp(xmp.encode("utf-8")), "webp"),
+            "https://example.org/w.c2pa",
+        )
+
+    def test_xmp_without_provenance_returns_none(self):
+        xmp = b'<x:xmpmeta xmlns:x="adobe:ns:meta/"></x:xmpmeta>'
+        self.assertIsNone(find_external_manifest_url(self._webp_with_xmp(xmp), "webp"))
+
+    def test_malformed_container_returns_none_rather_than_raising(self):
+        self.assertIsNone(find_external_manifest_url(b"not a webp", "webp"))
+
+
+class TestAvifExternalManifest(unittest.TestCase):
+
+    _XMP_UUID = bytes.fromhex("be7acfcb97a942e89c71999491e3afac")
+
+    @classmethod
+    def _avif_with_xmp(cls, xmp_bytes):
+        ftyp = (16).to_bytes(4, "big") + b"ftyp" + b"avif" + b"\x00\x00\x00\x00"
+        payload = cls._XMP_UUID + xmp_bytes
+        return ftyp + (8 + len(payload)).to_bytes(4, "big") + b"uuid" + payload
+
+    def test_finds_url_in_xmp_uuid_box(self):
+        xmp = XMP_TEMPLATE.format(url="https://example.org/a.c2pa")
+        self.assertEqual(
+            find_external_manifest_url(self._avif_with_xmp(xmp.encode("utf-8")), "avif"),
+            "https://example.org/a.c2pa",
+        )
+
+    def test_avif_without_xmp_box_returns_none(self):
+        self.assertIsNone(find_external_manifest_url(self._avif_with_xmp(b""), "avif"))
+
+
 class TestJpegExternalManifest(unittest.TestCase):
 
     def test_finds_url_in_app1_xmp(self):

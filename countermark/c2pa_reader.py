@@ -1,4 +1,5 @@
-"""Read — never verify — a C2PA manifest embedded in a PNG or JPEG file.
+"""Read — never verify — a C2PA manifest embedded in a PNG, JPEG, WebP, or
+AVIF file.
 
 This deliberately does NOT check the manifest's cryptographic signature: that
 needs X.509 certificate parsing and asymmetric-key verification, which
@@ -15,10 +16,12 @@ versions (confirmed against a real manifest example) — both are decoded.
 
 import json
 
+from .bmff_boxes import BmffError, find_c2pa_manifest as find_c2pa_bmff_manifest, is_avif
 from .cbor_decode import CborError, loads as cbor_loads
 from .jpeg_segments import JpegError, find_c2pa_jumbf as find_c2pa_jpeg_jumbf
 from .jumbf import JumbfError, content_type_uuid, parse_jumbf
 from .png_chunks import PngError, find_c2pa_chunk
+from .riff_chunks import RiffError, find_c2pa_chunk as find_c2pa_riff_chunk
 from .xmp import find_external_manifest_url
 
 UNVERIFIED_CAVEAT = (
@@ -169,21 +172,55 @@ def read_c2pa_jpeg(data):
     return _from_jumbf_bytes(jumbf_bytes, external)
 
 
+def read_c2pa_webp(data):
+    """Read a WebP's embedded C2PA manifest, if any (stored in a top-level
+    RIFF 'C2PA' chunk). Same return shape as read_c2pa_png()."""
+    external = find_external_manifest_url(data, "webp")
+    try:
+        chunk = find_c2pa_riff_chunk(data)
+    except RiffError as exc:
+        return _result(False, str(exc), None, external)
+    return _from_jumbf_bytes(chunk, external)
+
+
+def read_c2pa_avif(data):
+    """Read an AVIF's embedded C2PA manifest, if any (stored in a top-level
+    BMFF 'uuid' box). Same return shape as read_c2pa_png()."""
+    external = find_external_manifest_url(data, "avif")
+    try:
+        jumbf_bytes = find_c2pa_bmff_manifest(data)
+    except BmffError as exc:
+        return _result(False, str(exc), None, external)
+    return _from_jumbf_bytes(jumbf_bytes, external)
+
+
 _PNG_SIGNATURE = bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
 _JPEG_SOI = b"\xff\xd8"
 
 
 def read_c2pa(data):
-    """Read a C2PA manifest from a PNG or JPEG file, detected by content.
+    """Read a C2PA manifest from a PNG, JPEG, WebP, or AVIF file, detected by
+    content.
 
     Returns the same shape as read_c2pa_png()/read_c2pa_jpeg(). For a file
-    that is neither, returns found=False with an explanatory error.
+    that is none of these, returns found=False with an explanatory error.
     """
     if data[:8] == _PNG_SIGNATURE:
         return read_c2pa_png(data)
     if data[:2] == _JPEG_SOI:
         return read_c2pa_jpeg(data)
-    return _result(False, "Not a PNG or JPEG file (unrecognised file header).", None)
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return read_c2pa_webp(data)
+    if data[4:8] == b"ftyp":
+        if is_avif(data):
+            return read_c2pa_avif(data)
+        # Honesty about near-misses: HEIC/MP4 share this container and can
+        # carry C2PA the same way, but that path is untested here, so we
+        # decline rather than half-support it.
+        return _result(False,
+                       f"An ISO BMFF file with brand {data[8:12]!r}, not AVIF — "
+                       "no other BMFF format is supported.", None)
+    return _result(False, "Not a PNG, JPEG, WebP, or AVIF file (unrecognised file header).", None)
 
 
 def _render_content(content, indent):

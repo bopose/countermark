@@ -27,7 +27,7 @@ from .provenance import diff_drafts
 from .scan import analyze
 
 TEXT_SUFFIXES = (".txt", ".md", ".markdown") + DOCUMENT_SUFFIXES
-IMAGE_SUFFIXES = (".png", ".jpg", ".jpeg")
+IMAGE_SUFFIXES = (".png", ".jpg", ".jpeg", ".webp", ".avif")
 
 
 class UsageError(Exception):
@@ -373,7 +373,7 @@ def build_parser():
     p_clean.set_defaults(func=cmd_clean)
 
     p_c2pa = subs.add_parser("c2pa", help="read C2PA provenance from images")
-    add_common(p_c2pa, ".png, .jpg, .jpeg")
+    add_common(p_c2pa, ".png, .jpg, .jpeg, .webp, .avif")
     p_c2pa.add_argument("--sidecar-dir", metavar="DIR",
                         help="write a durable JSON provenance record per image")
     p_c2pa.add_argument("--premis-dir", metavar="DIR",
@@ -386,7 +386,7 @@ def build_parser():
 
     p_verify = subs.add_parser(
         "verify", help="re-check files against the fixity in their PREMIS records")
-    add_common(p_verify, ".png, .jpg, .jpeg")
+    add_common(p_verify, ".png, .jpg, .jpeg, .webp, .avif")
     p_verify.add_argument("--premis-dir", metavar="DIR", required=True,
                           help="directory of PREMIS records written by `c2pa --premis-dir`")
     p_verify.add_argument("--only-problems", action="store_true",
@@ -395,7 +395,7 @@ def build_parser():
 
     p_bag = subs.add_parser(
         "bag", help="package images + sidecars + PREMIS into a BagIt bag")
-    add_common(p_bag, ".png, .jpg, .jpeg")
+    add_common(p_bag, ".png, .jpg, .jpeg, .webp, .avif")
     p_bag.add_argument("-o", "--output", metavar="DIR", required=True,
                        help="bag directory to create (must not already have contents)")
     p_bag.set_defaults(func=cmd_bag)

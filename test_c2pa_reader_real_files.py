@@ -45,7 +45,7 @@ def _all_samples():
         return []
     return sorted(
         f for f in os.listdir(SAMPLES)
-        if f.lower().endswith((".jpg", ".jpeg", ".png"))
+        if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp", ".avif"))
     )
 
 
@@ -57,6 +57,13 @@ NO_MANIFEST = [
     "adobe-20220124-I.jpg",
     "sample1.png",
     "libpng-test.png",
+    # WebP/AVIF negatives, from c2pa-rs's fixtures (same source as
+    # sample1.png above). Signed positives for these formats are the
+    # c2patool-* files below — see TestRealSignedWebp for why they had to
+    # be generated rather than collected.
+    "sample1.webp",
+    "test_xmp.webp",
+    "sample1.avif",
 ]
 
 # One representative file per generator vendor, to prove the reader isn't
@@ -136,6 +143,27 @@ class TestFilesWithoutManifest(unittest.TestCase):
                 self.assertIsNone(result["manifest"])
                 self.assertIsNone(result["external_manifest_url"])
                 self.assertIn("No C2PA manifest is embedded", to_summary_text(result))
+
+
+@unittest.skipUnless(_has("test_xmp.webp"), "sample not present")
+class TestRealWebpMetadataDoesNotFalsePositive(unittest.TestCase):
+    """test_xmp.webp is a real, metadata-heavy WebP: VP8X, an ICC profile,
+    EXIF, a Photoshop PSAI chunk, and a large XMP packet whose keyword list
+    literally contains the string "C2PA" — but no manifest chunk. The WebP
+    counterpart to sample1.png's role for PNG: ordinary metadata, even
+    C2PA-adjacent text, must not read as provenance."""
+
+    def setUp(self):
+        self.result = read_c2pa(_read("test_xmp.webp"))
+
+    def test_no_manifest_reported_despite_c2pa_string_in_xmp(self):
+        self.assertFalse(self.result["found"])
+        self.assertIsNone(self.result["error"])
+
+    def test_its_real_xmp_has_no_provenance_pointer_either(self):
+        # The XMP packet is genuine and is scanned — it just doesn't declare
+        # a dcterms:provenance URL, and we must not invent one.
+        self.assertIsNone(self.result["external_manifest_url"])
 
 
 class TestMultipleVendors(unittest.TestCase):
@@ -398,6 +426,100 @@ class TestPngMatchesReferenceImplementation(unittest.TestCase):
         )
         self.assertTrue(self.mine["found"])
         self.assertIsNone(self.mine["error"])
+
+
+@unittest.skipUnless(_has("c2patool-20260813-signed.webp"), "signed WebP sample not present")
+class TestRealSignedWebp(unittest.TestCase):
+    """The WebP path, validated against a real signed file.
+
+    No public C2PA corpus ships a *signed* WebP: the official public-testfiles
+    repository is DNG/JPEG/PNG only, and the WebP/AVIF fixtures in c2pa-rs and
+    c2pa-js are all unsigned sources. So this sample was generated with the
+    reference implementation itself: the official prebuilt c2patool (v0.27.14,
+    its built-in test signer), run over c2pa-rs's sample1.webp fixture —
+        c2patool sample1.webp -m manifest_def.json -o <this file>
+    That makes it exactly what the JPEG corpus is: genuine c2pa-rs-written
+    bytes. The .json alongside is c2patool's own report on the same file, so
+    our parse can be cross-checked against the reference implementation's.
+    """
+
+    NAME = "c2patool-20260813-signed.webp"
+
+    def setUp(self):
+        self.result = read_c2pa(_read(self.NAME))
+        with open(_sample(self.NAME + ".json"), encoding="utf-8") as f:
+            self.reference = json.load(f)
+
+    def test_manifest_found_in_riff_c2pa_chunk(self):
+        self.assertTrue(self.result["found"])
+        self.assertIsNone(self.result["error"])
+        self.assertEqual(self.result["manifest"]["uuid_meaning"], "C2PA Manifest Store")
+
+    def test_manifest_urns_match_reference_implementation(self):
+        self.assertEqual(
+            {c["label"] for c in self.result["manifest"]["children"]},
+            set(self.reference["manifests"].keys()),
+        )
+
+    def test_claim_generator_matches_reference(self):
+        am = self.reference["manifests"][self.reference["active_manifest"]]
+        self.assertEqual(am["claim_generator_info"][0]["name"], "countermark-test-suite")
+        self.assertIn("countermark-test-suite",
+                      to_summary_text(self.result))
+
+    def test_expected_assertions_present(self):
+        store = next(c for c in self.result["manifest"]["children"][0]["children"]
+                     if c["label"] == "c2pa.assertions")
+        labels = {c["label"] for c in store["children"]}
+        self.assertIn("c2pa.actions.v2", labels)
+        self.assertIn("c2pa.hash.data", labels)  # WebP uses the general data hash
+        self.assertIn("c2pa.thumbnail.claim", labels)
+
+
+@unittest.skipUnless(_has("c2patool-20260813-signed.avif"), "signed AVIF sample not present")
+class TestRealSignedAvif(unittest.TestCase):
+    """The AVIF path, validated against a real signed file.
+
+    Generated the same way as TestRealSignedWebp's sample (official c2patool
+    v0.27.14, built-in test signer, over c2pa-rs's sample1.avif fixture),
+    for the same reason: no public corpus has a signed AVIF. The payoff
+    detail is the hard binding: BMFF formats use c2pa.hash.bmff.v3 instead
+    of JPEG/PNG/WebP's c2pa.hash.data, so this file exercises a manifest
+    shape none of the other 33 samples can.
+    """
+
+    NAME = "c2patool-20260813-signed.avif"
+
+    def setUp(self):
+        self.result = read_c2pa(_read(self.NAME))
+        with open(_sample(self.NAME + ".json"), encoding="utf-8") as f:
+            self.reference = json.load(f)
+
+    def test_manifest_found_in_bmff_uuid_box(self):
+        self.assertTrue(self.result["found"])
+        self.assertIsNone(self.result["error"])
+        self.assertEqual(self.result["manifest"]["uuid_meaning"], "C2PA Manifest Store")
+
+    def test_manifest_urns_match_reference_implementation(self):
+        self.assertEqual(
+            {c["label"] for c in self.result["manifest"]["children"]},
+            set(self.reference["manifests"].keys()),
+        )
+
+    def test_bmff_specific_hard_binding_present(self):
+        store = next(c for c in self.result["manifest"]["children"][0]["children"]
+                     if c["label"] == "c2pa.assertions")
+        labels = {c["label"] for c in store["children"]}
+        self.assertIn("c2pa.hash.bmff.v3", labels)
+        self.assertNotIn("c2pa.hash.data", labels)
+
+    def test_reference_calls_it_valid_and_we_still_claim_nothing(self):
+        # c2patool trusts its own test certificate, so unlike the ChatGPT PNG
+        # this file validates as Valid — and our output is *still* identical
+        # in shape to what a tampered file would produce. The caveat cuts
+        # both ways: we can't condemn, and we can't vouch either.
+        self.assertEqual(self.reference["validation_state"], "Valid")
+        self.assertEqual(self.result["caveat"], UNVERIFIED_CAVEAT)
 
 
 @unittest.skipUnless(_has("adobe-20220124-CA.jpg"), "sample file not present")

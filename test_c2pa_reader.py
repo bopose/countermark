@@ -11,7 +11,9 @@ import struct
 import unittest
 import zlib
 
-from countermark.c2pa_reader import UNVERIFIED_CAVEAT, read_c2pa_png, to_sidecar, to_summary_text
+from countermark.c2pa_reader import (
+    UNVERIFIED_CAVEAT, read_c2pa, read_c2pa_png, to_sidecar, to_summary_text,
+)
 from countermark.jumbf import content_type_uuid
 
 _PNG_SIG = bytes([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A])
@@ -162,6 +164,99 @@ class TestReadC2paPng(unittest.TestCase):
         content = claim["children"][0]["content"]
         self.assertIsNone(content["decoded_as"])
         self.assertIn("decode_error", content)
+
+
+def _riff_chunk(fourcc, payload):
+    pad = b"\x00" if len(payload) % 2 else b""
+    return fourcc + len(payload).to_bytes(4, "little") + payload + pad
+
+
+def _minimal_webp(*extra_chunks):
+    body = b"WEBP" + _riff_chunk(b"VP8 ", b"fake image data") + b"".join(extra_chunks)
+    return b"RIFF" + len(body).to_bytes(4, "little") + body
+
+
+_C2PA_BOX_UUID = bytes.fromhex("d8fec3d61b0e483c92975828877ec481")
+
+
+def _bmff_box(box_type, payload):
+    return (8 + len(payload)).to_bytes(4, "big") + box_type + payload
+
+
+def _minimal_avif(*extra_boxes):
+    ftyp = _bmff_box(b"ftyp", b"avif" + b"\x00\x00\x00\x00")
+    return ftyp + _bmff_box(b"mdat", b"fake image data") + b"".join(extra_boxes)
+
+
+def _c2pa_uuid_box(jumbf):
+    payload = (_C2PA_BOX_UUID + b"\x00\x00\x00\x00" + b"manifest\x00"
+               + (0).to_bytes(8, "big") + jumbf)
+    return _bmff_box(b"uuid", payload)
+
+
+class TestReadC2paWebpAndAvif(unittest.TestCase):
+    """End-to-end through read_c2pa()'s content-based dispatch, with the same
+    honesty contract as PNG: not-found is not an error, and a present-but-
+    broken manifest is found-with-error."""
+
+    def test_webp_manifest_found_and_parsed_via_dispatch(self):
+        webp = _minimal_webp(_riff_chunk(b"C2PA", _build_c2pa_jumbf()))
+        result = read_c2pa(webp)
+        self.assertTrue(result["found"])
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["manifest"]["uuid_meaning"], "C2PA Manifest Store")
+        claim = result["manifest"]["children"][0]["children"][1]
+        self.assertEqual(claim["children"][0]["content"]["value"], {"recorder": "TestTool"})
+
+    def test_avif_manifest_found_and_parsed_via_dispatch(self):
+        avif = _minimal_avif(_c2pa_uuid_box(_build_c2pa_jumbf()))
+        result = read_c2pa(avif)
+        self.assertTrue(result["found"])
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["manifest"]["uuid_meaning"], "C2PA Manifest Store")
+
+    def test_webp_without_c2pa_chunk_is_not_found_not_error(self):
+        result = read_c2pa(_minimal_webp())
+        self.assertFalse(result["found"])
+        self.assertIsNone(result["error"])
+        self.assertEqual(result["caveat"], UNVERIFIED_CAVEAT)
+
+    def test_avif_without_c2pa_box_is_not_found_not_error(self):
+        result = read_c2pa(_minimal_avif())
+        self.assertFalse(result["found"])
+        self.assertIsNone(result["error"])
+
+    def test_webp_with_malformed_jumbf_reports_found_with_error(self):
+        webp = _minimal_webp(_riff_chunk(b"C2PA", b"not valid jumbf data"))
+        result = read_c2pa(webp)
+        self.assertTrue(result["found"])
+        self.assertIsNotNone(result["error"])
+        self.assertIsNone(result["manifest"])
+
+    def test_avif_with_malformed_jumbf_reports_found_with_error(self):
+        avif = _minimal_avif(_c2pa_uuid_box(b"not valid jumbf data"))
+        result = read_c2pa(avif)
+        self.assertTrue(result["found"])
+        self.assertIsNotNone(result["error"])
+
+    def test_corrupt_riff_container_reports_error_without_raising(self):
+        truncated = bytearray(_minimal_webp())
+        truncated[4:8] = (9999).to_bytes(4, "little")  # header overstates size
+        result = read_c2pa(bytes(truncated))
+        self.assertFalse(result["found"])
+        self.assertIsNotNone(result["error"])
+
+    def test_heic_is_refused_by_name_not_misread(self):
+        heic = _bmff_box(b"ftyp", b"heic" + b"\x00\x00\x00\x00" + b"mif1")
+        result = read_c2pa(heic)
+        self.assertFalse(result["found"])
+        self.assertIn(b"heic".decode(), result["error"])
+
+    def test_unrecognised_header_names_all_supported_formats(self):
+        result = read_c2pa(b"GIF89a...")
+        self.assertFalse(result["found"])
+        for fmt in ("PNG", "JPEG", "WebP", "AVIF"):
+            self.assertIn(fmt, result["error"])
 
 
 class TestRendering(unittest.TestCase):
