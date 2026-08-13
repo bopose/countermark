@@ -472,3 +472,23 @@ own terms: the C2PA JPEGs are CC BY-SA from
 the PNGs are MIT from
 [contentauth](https://github.com/contentauth/example-assets). Research quoted
 in the explainer belongs to its authors and is cited in the document.
+
+## Disclaimer
+
+**Not legal advice.** The `/detectors` page discusses UK equality law (the
+*Abrahart* Court of Appeal ruling and the reasonable-adjustments duty) and the
+EU AI Act's Article 50 exemption for assistive standard editing. That
+discussion is a careful reading of published texts and cited research, not
+legal advice, and reading it creates no advisor relationship. Laws, rulings
+and institutional policies change, and a specific situation always turns on
+its own facts — if one of these arguments matters for a real case, take it to
+an actual disability officer, students' union caseworker, or solicitor who can
+look at those facts, not just this page.
+
+**No warranty.** This software is provided "AS IS", without warranty of any
+kind, express or implied — see [LICENSE](LICENSE) for the full MIT terms. It
+is offered to help you build your own evidence and understand your own
+options; it is not a substitute for professional judgment, and nothing it
+produces should be treated as the sole basis for an academic-integrity
+defence, a provenance claim in a formal proceeding, or an accessibility
+accommodation decision.
