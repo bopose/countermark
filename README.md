@@ -16,6 +16,14 @@ visually-impaired writers) who are unfairly pushed to "prove" how they wrote
 something, and for archivists dealing with provenance metadata that doesn't
 survive format migration. It favours **honesty over reassurance** throughout.
 
+**That honesty is pinned by tests, not merely asserted.** The C2PA reader
+never verifies signatures, and `TestTamperBlindness` holds it to that: two
+images differing by exactly six bytes — one valid, one documented by C2PA as
+having a deliberately broken signature — must both read without complaint. Any
+future change that made the tool *appear* to detect tampering would fail that
+test first, before the caveat below could quietly become a lie. Full story in
+the C2PA section.
+
 Runs entirely on your own machine — the server binds to loopback only, makes
 no network calls, and uses nothing but the Python 3 standard library. Nothing
 to `pip install`, nothing hidden: every line is readable.
@@ -111,10 +119,15 @@ stderr, so it pipes cleanly.
   characters, normalises odd spaces to a plain space and line separators to a
   newline (so words never merge), and shows a full log of every change. This
   is **text hygiene** — for accessibility, for defusing "Trojan Source" bidi
-  tricks, for tidy copy-paste — **not** watermark removal; this tool cannot
-  see a statistical AI watermark and cleaning will not make AI text
-  "undetectable." Homoglyph fixing is opt-in and only ever touches
+  tricks, for tidy copy-paste. Homoglyph fixing is opt-in and only ever touches
   high-confidence disguised words, never a possibly-legitimate foreign one.
+- **On watermarks, stated precisely.** An edit-based watermark made of
+  invisible Unicode *is* invisible Unicode, so cleaning removes it — exactly as
+  any text sanitiser or Trojan-Source defence would. There is no way to strip
+  zero-width characters for a screen-reader user and simultaneously preserve a
+  mark built out of zero-width characters; no function can do both at once.
+  What this tool cannot touch is the **statistical** kind: it never sees one,
+  and cleaning will not make AI text "undetectable."
 
 **What it deliberately does NOT do:** detect statistical "text watermarks"
 (the kind AI vendors embed by subtly biasing word choice — only the vendor's
@@ -429,9 +442,9 @@ an actual screen reader — if something doesn't work well with yours, say so.
 python3 -m unittest discover -p "test_*.py"
 ```
 
-Runs the full suite (270+ tests) covering every module below, including the
+Runs the full suite (340+ tests) covering every module below, including the
 real-file regression tests in `test_c2pa_reader_real_files.py`. Those skip
-gracefully if the 23 MB `samples/` directory isn't present, so the suite
+gracefully if the ~27 MB `samples/` directory isn't present, so the suite
 still passes on a copy without it.
 
 ## Layout

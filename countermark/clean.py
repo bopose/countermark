@@ -3,8 +3,14 @@
 `clean(text)` strips the hidden characters the scanner flags and normalises
 odd spaces, returning the cleaned text plus a full log of every change. This
 is text hygiene (accessibility, Trojan-Source defence, tidy copy-paste): it
-removes invisible Unicode junk. It does NOT — and cannot — remove a statistical
-AI watermark, which this tool never sees.
+removes invisible Unicode junk.
+
+Stated precisely, because the distinction is the honest one: an edit-based
+watermark made of invisible Unicode is invisible Unicode, so this removes it —
+stripping zero-width characters for a screen-reader user while preserving a
+mark built out of zero-width characters is not something one function can do.
+What it does NOT — and cannot — remove is a statistical AI watermark, the kind
+carried in word choice itself, which this tool never sees.
 
 Homoglyph normalisation is opt-in and deliberately limited to high-confidence
 "disguised" words, so a genuinely foreign word is never latinised.
