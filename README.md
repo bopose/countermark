@@ -490,6 +490,16 @@ samples/                        real-world fixtures; ~27 MB, optional (tests ski
 test_*.py                       one test file per module above, plus test_c2pa_reader_real_files.py
 ```
 
+## How this was built
+
+Written with Claude (Anthropic) as a coding assistant; the `Co-Authored-By`
+trailers in the git history record which commits. Nothing here was taken on
+trust because a model produced it: every binary parser is validated against
+real files from the official C2PA corpus and cross-checked against the
+reference implementation's own output, the honesty caveats are pinned by tests
+that fail if they stop being true, and the research cited in `/detectors` was
+read in the original rather than recalled.
+
 ## Licensing
 
 Code and prose are licensed separately, because they are useful in different
